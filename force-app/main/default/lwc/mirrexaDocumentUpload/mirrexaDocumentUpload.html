@@ -1,0 +1,170 @@
+<template>
+  <lightning-card title="Upload Document Template" icon-name="utility:upload">
+    <div class="slds-p-horizontal_medium">
+      <!-- Connection Status Component -->
+      <c-mirrexa-connection-status
+        auto-register="true"
+        check-on-connect="true"
+        show-loading-spinner="false"
+        onconnectionstatuschange={handleConnectionStatusChange}
+        onconnectionerror={handleConnectionError}
+        onuserregistered={handleUserRegistered}
+      ></c-mirrexa-connection-status>
+
+      <template if:false={isLoadingUserData}>
+        <!-- Show content only when connected -->
+        <template if:true={isConnected}>
+          <div class="slds-var-m-top_x-small slds-var-m-bottom_medium">
+            <a
+              href="https://mirrexa.ai/user/templates"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="slds-text-link slds-text-body_small"
+            >
+              Manage Templates and Tags in Mirrexa
+            </a>
+          </div>
+          <lightning-layout multiple-rows="true">
+            <!-- Name Field -->
+            <lightning-layout-item size="12" class="slds-p-bottom_small">
+              <lightning-input
+                label="Template Name"
+                value={templateName}
+                onchange={handleNameChange}
+                required
+                placeholder="Enter template name"
+              >
+              </lightning-input>
+            </lightning-layout-item>
+
+            <!-- Description Field -->
+            <lightning-layout-item size="12" class="slds-p-bottom_small">
+              <lightning-textarea
+                label="Description"
+                value={templateDescription}
+                onchange={handleDescriptionChange}
+                required
+                placeholder="Enter template description"
+              >
+              </lightning-textarea>
+            </lightning-layout-item>
+
+            <!-- Type Field - Only show if user has suitability-letter set to true -->
+            <template if:true={showTypeField}>
+              <lightning-layout-item size="12" class="slds-p-bottom_small">
+                <lightning-combobox
+                  label="Template Type"
+                  value={templateType}
+                  options={typeOptions}
+                  onchange={handleTypeChange}
+                  required
+                >
+                </lightning-combobox>
+              </lightning-layout-item>
+            </template>
+
+            <!-- File Upload -->
+            <lightning-layout-item size="12" class="slds-p-bottom_small">
+              <lightning-input
+                type="file"
+                label="Document File"
+                accept=".docx,.doc"
+                onchange={handleFileChange}
+                required
+              >
+              </lightning-input>
+              <template if:true={selectedFileName}>
+                <div class="slds-p-top_x-small slds-text-color_success">
+                  Selected: {selectedFileName}
+                </div>
+              </template>
+            </lightning-layout-item>
+
+            <!-- Organisation Sharing -->
+            <lightning-layout-item size="12" class="slds-p-bottom_small">
+              <lightning-input
+                type="checkbox"
+                label="Shared across your organisation?"
+                checked={availableToOrganisation}
+                onchange={handleOrganisationChange}
+              >
+              </lightning-input>
+            </lightning-layout-item>
+
+            <!-- Upload Button -->
+            <lightning-layout-item size="12" class="slds-p-top_small">
+              <lightning-button
+                variant="brand"
+                label="Upload Template"
+                onclick={handleUpload}
+                disabled={isUploading}
+                class="slds-m-right_small"
+              >
+              </lightning-button>
+              <template if:true={isUploading}>
+                <lightning-spinner
+                  alternative-text="Uploading..."
+                  size="small"
+                ></lightning-spinner>
+              </template>
+            </lightning-layout-item>
+
+            <!-- Success/Error Messages -->
+            <template if:true={successMessage}>
+              <lightning-layout-item size="12" class="slds-p-top_small">
+                <div
+                  class="slds-notify slds-notify_alert slds-theme_success"
+                  role="alert"
+                >
+                  <span class="slds-assistive-text">Success</span>
+                  <lightning-icon
+                    icon-name="utility:success"
+                    alternative-text="Success"
+                    size="x-small"
+                    class="slds-m-right_x-small"
+                  ></lightning-icon>
+                  {successMessage}
+                </div>
+              </lightning-layout-item>
+            </template>
+
+            <template if:true={errorMessage}>
+              <lightning-layout-item size="12" class="slds-p-top_small">
+                <div
+                  class="slds-notify slds-notify_alert slds-theme_error"
+                  role="alert"
+                >
+                  <span class="slds-assistive-text">Error</span>
+                  <lightning-icon
+                    icon-name="utility:error"
+                    alternative-text="Error"
+                    size="x-small"
+                    class="slds-m-right_x-small"
+                  ></lightning-icon>
+                  {errorMessage}
+                </div>
+              </lightning-layout-item>
+            </template>
+          </lightning-layout>
+        </template>
+
+        <!-- Show connection message when not connected -->
+        <template if:false={isConnected}>
+          <div class="slds-text-align_center slds-var-p-around_medium">
+            <lightning-icon
+              icon-name="utility:warning"
+              variant="warning"
+              size="medium"
+            ></lightning-icon>
+            <h3 class="slds-text-heading_medium slds-var-m-top_small">
+              Connection Required
+            </h3>
+            <p class="slds-var-m-top_small">
+              Please connect to Mirrexa to upload document templates.
+            </p>
+          </div>
+        </template>
+      </template>
+    </div>
+  </lightning-card>
+</template>

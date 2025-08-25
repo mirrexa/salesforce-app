@@ -1,0 +1,34 @@
+{
+  "orgName": "matt company",
+  "country": "GB",
+  "edition": "Developer",
+  "hasSampleData": true,
+  "features": [
+    "EnableSetPasswordInApi",
+    "PersonAccounts",
+    "API",
+    "Assessments",
+    "DebugApex",
+    "FinancialServicesUser:1",
+    "AuthorApex",
+    "ExternalClientApps"
+  ],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true,
+      "enableLightningPreviewPref": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    },
+    "securitySettings": {
+      "singleSignOnSettings": {
+        "enableSamlLogin": true
+      },
+      "sessionSettings": {
+        "lockSessionsToIp": false,
+        "lockSessionsToDomain": false
+      }
+    }
+  }
+}

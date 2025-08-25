@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Last_Setup_Error__c</fullName>
+    <description>Stores the last setup error message and type for troubleshooting</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Contains the last error encountered during Mirrexa setup operations</inlineHelpText>
+    <label>Last Setup Error</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,88 @@
+{
+  "listing": {
+    "name": "Mirrexa",
+    "tagline": "Professional Document Generation for Wealth Managers",
+    "description": "Transform your Salesforce data into professional client documents with Mirrexa. Designed specifically for wealth managers and financial advisors, this app seamlessly integrates with your existing Salesforce workflow to generate polished, client-ready documents in seconds.",
+    "detailedDescription": "Mirrexa revolutionizes document creation for financial professionals by bridging the gap between Salesforce CRM data and professional document output. With secure OAuth 2.0 authentication and enterprise-grade security, you can confidently generate investment reports, client summaries, portfolio analyses, and custom financial documents directly from your Salesforce environment.\n\nKey capabilities include:\n• One-click document generation from Salesforce records\n• Secure OAuth 2.0 integration with Mirrexa platform\n• Professional templates optimized for financial services\n• Seamless integration with Account, Contact, and Opportunity records\n• Enterprise-grade security and compliance\n• Lightning Experience optimized interface\n• Mobile-ready responsive design",
+    "categories": [
+      "Analytics",
+      "Document Generation",
+      "Financial Services",
+      "Productivity"
+    ],
+    "industries": [
+      "Financial Services",
+      "Wealth Management",
+      "Investment Management",
+      "Insurance"
+    ],
+    "languages": ["en_US"],
+    "countries": ["US", "CA", "GB", "AU", "DE", "FR", "IT", "ES", "NL", "CH"],
+    "publisher": {
+      "name": "Mirrexa.ai",
+      "website": "https://mirrexa.ai",
+      "supportEmail": "team@mirrexa.ai"
+    },
+    "technicalRequirements": {
+      "salesforceEditions": ["Enterprise", "Professional", "Unlimited", "Developer"],
+      "apiVersion": "59.0",
+      "lightningExperience": true,
+      "mobileSupport": true,
+      "customDomains": false,
+      "myDomain": true
+    },
+    "permissions": {
+      "standardObjects": ["Account", "Contact", "Opportunity"],
+      "customObjects": [],
+      "systemPermissions": [
+        "ViewSetup",
+        "ManageExternalCredentials",
+        "ManageNamedCredentials"
+      ],
+      "externalConnections": [
+        "https://api.mirrexa.ai",
+        "https://mirrexa.ai"
+      ]
+    },
+    "securityReview": {
+      "status": "pending",
+      "submittedDate": null,
+      "approvedDate": null,
+      "securityContact": "team@mirrexa.ai"
+    },
+    "installation": {
+      "postInstallUrl": "https://mirrexa.ai/salesforce/post-install",
+      "uninstallUrl": "https://mirrexa.ai/salesforce/uninstall",
+      "configurationRequired": true,
+      "adminSetupRequired": true
+    },
+    "media": {
+      "logo": "assets/mirrexa-logo-512x512.png",
+      "screenshots": [
+        "assets/screenshot-1-main-interface.png",
+        "assets/screenshot-2-document-generation.png", 
+        "assets/screenshot-3-oauth-flow.png",
+        "assets/screenshot-4-admin-setup.png"
+      ],
+      "videos": [
+        "https://mirrexa.ai/videos/salesforce-demo"
+      ]
+    },
+    "documentation": {
+      "installGuide": "install-guide.md",
+      "adminGuide": "admin-guide.md",
+      "userGuide": "user-guide.md",
+      "apiDocumentation": "https://docs.mirrexa.ai/salesforce",
+      "releaseNotes": "CHANGELOG.md"
+    },
+    "compliance": {
+      "gdpr": true,
+      "ccpa": true,
+      "sox": false,
+      "hipaa": false,
+      "pci": false,
+      "iso27001": false,
+      "soc2": false
+    }
+  }
+}

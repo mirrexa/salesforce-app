@@ -1,0 +1,274 @@
+<template>
+  <lightning-card
+    title="Assign Mirrexa Access by Permission Set"
+    icon-name="standard:permission_set_group"
+  >
+    <div class="slds-var-p-horizontal_medium">
+      <div class="slds-box slds-theme_info slds-var-m-bottom_medium">
+        Search for a permission set, then select users from that permission set
+        to assign Mirrexa_App_Access_2GP.
+      </div>
+
+      <!-- Search Section -->
+      <div class="slds-box slds-var-m-bottom_medium">
+        <h3 class="slds-text-heading_small slds-var-m-bottom_small">
+          Step 1: Search Permission Sets
+        </h3>
+        <div class="slds-grid slds-gutters slds-wrap">
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3">
+            <lightning-input
+              type="text"
+              label="Permission Set Name or Label"
+              value={searchTerm}
+              onchange={handleSearchTermChange}
+              placeholder="Enter at least 2 characters to search..."
+              class="slds-var-m-bottom_small"
+            >
+            </lightning-input>
+          </div>
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+            <div class="slds-var-m-top_large">
+              <lightning-button
+                label="Search"
+                onclick={handleSearchPermissionSets}
+                variant="brand"
+                disabled={isSearchDisabled}
+                icon-name="utility:search"
+                class="slds-var-m-right_small"
+              >
+              </lightning-button>
+              <lightning-button
+                label="Clear"
+                onclick={handleClearSearch}
+                variant="neutral"
+              >
+              </lightning-button>
+            </div>
+          </div>
+        </div>
+
+        <template if:true={isSearching}>
+          <lightning-spinner
+            alternative-text="Searching permission sets..."
+            size="small"
+          ></lightning-spinner>
+        </template>
+
+        <!-- Permission Set Results -->
+        <template if:true={hasPermissionSets}>
+          <div class="slds-var-m-top_medium">
+            <h4 class="slds-text-heading_small slds-var-m-bottom_small">
+              Found Permission Sets:
+            </h4>
+            <div class="slds-grid slds-wrap slds-gutters_small">
+              <template for:each={permissionSets} for:item="permSet">
+                <div
+                  key={permSet.id}
+                  class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3"
+                >
+                  <div class="slds-box slds-box_x-small">
+                    <h5 class="slds-text-heading_small">{permSet.label}</h5>
+                    <p class="slds-text-body_small slds-text-color_weak">
+                      {permSet.name}
+                    </p>
+                    <template if:true={permSet.description}>
+                      <p class="slds-text-body_small slds-var-m-top_x-small">
+                        {permSet.description}
+                      </p>
+                    </template>
+                    <div class="slds-var-m-top_small">
+                      <lightning-button
+                        label="Select"
+                        data-id={permSet.id}
+                        onclick={handlePermissionSetSelect}
+                        variant="neutral"
+                        size="small"
+                      >
+                      </lightning-button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Selected Permission Set and Users -->
+      <template if:true={hasSelectedPermissionSet}>
+        <div class="slds-box slds-var-m-bottom_medium">
+          <h3 class="slds-text-heading_small slds-var-m-bottom_small">
+            Step 2: Select Users from "{selectedPermissionSet.label}"
+          </h3>
+
+          <template if:true={isLoading}>
+            <lightning-spinner
+              alternative-text="Loading users..."
+              size="small"
+            ></lightning-spinner>
+          </template>
+
+          <template if:false={isLoading}>
+            <template if:true={hasUsersInPermissionSet}>
+              <div class="slds-var-m-bottom_medium">
+                <p class="slds-text-body_regular slds-var-m-bottom_small">
+                  <strong>{totalUserCount}</strong> active user(s) found in this
+                  permission set.
+                </p>
+
+                <!-- Selection Controls -->
+                <div class="slds-button-group slds-var-m-bottom_small">
+                  <lightning-button
+                    label="Select All"
+                    onclick={handleSelectAll}
+                    variant="neutral"
+                    size="small"
+                  >
+                  </lightning-button>
+                  <lightning-button
+                    label="Clear Selection"
+                    onclick={handleClearSelection}
+                    variant="neutral"
+                    size="small"
+                  >
+                  </lightning-button>
+                </div>
+
+                <template if:true={hasSelectedUsers}>
+                  <div class="slds-var-m-bottom_medium">
+                    <lightning-badge
+                      label={selectedUserCount}
+                      variant="success"
+                    ></lightning-badge>
+                    <span class="slds-var-m-left_x-small"
+                      >user(s) selected</span
+                    >
+                  </div>
+                </template>
+              </div>
+
+              <!-- Users Cards - Mobile Friendly -->
+              <div class="slds-grid slds-wrap slds-gutters_small">
+                <template for:each={usersInPermissionSet} for:item="user">
+                  <div
+                    key={user.userId}
+                    class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3"
+                  >
+                    <lightning-card class="user-card slds-var-m-bottom_small">
+                      <div class="slds-card__header slds-grid">
+                        <div
+                          class="slds-media slds-media_center slds-has-flexi-truncate"
+                        >
+                          <div class="slds-media__figure">
+                            <lightning-input
+                              type="checkbox"
+                              data-user-id={user.userId}
+                              onchange={handleCardSelection}
+                              class="user-checkbox"
+                            ></lightning-input>
+                          </div>
+                          <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                              <span
+                                class="slds-text-heading_small slds-truncate"
+                                >{user.name}</span
+                              >
+                            </h2>
+                            <div
+                              class="slds-text-body_small slds-text-color_weak"
+                            >
+                              {user.username}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="slds-card__body slds-card__body_inner">
+                        <div class="slds-grid slds-wrap slds-gutters_xx-small">
+                          <div class="slds-col slds-size_1-of-1">
+                            <div class="user-info-text">
+                              <lightning-icon
+                                icon-name="utility:email"
+                                size="xx-small"
+                                class="slds-var-m-right_xx-small"
+                              ></lightning-icon>
+                              <a href={user.emailLink}>{user.email}</a>
+                            </div>
+                          </div>
+                          <div
+                            class="slds-col slds-size_1-of-1 slds-var-m-top_xx-small"
+                          >
+                            <div class="user-info-text">
+                              <lightning-icon
+                                icon-name="utility:user"
+                                size="xx-small"
+                                class="slds-var-m-right_xx-small"
+                              ></lightning-icon>
+                              <lightning-badge
+                                label={user.activeLabel}
+                                variant={user.activeVariant}
+                              ></lightning-badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </lightning-card>
+                  </div>
+                </template>
+              </div>
+
+              <!-- Assignment Button -->
+              <div class="slds-var-m-top_medium slds-text-align_center">
+                <lightning-button
+                  label="Assign Mirrexa Access to Selected Users"
+                  onclick={handleAssignMirrexaAccess}
+                  variant="brand"
+                  disabled={isAssigning}
+                  icon-name="utility:add"
+                  class="slds-button_stretch"
+                >
+                </lightning-button>
+
+                <template if:true={isAssigning}>
+                  <div class="slds-var-m-top_small">
+                    <lightning-spinner
+                      alternative-text="Assigning access..."
+                      size="small"
+                    ></lightning-spinner>
+                  </div>
+                </template>
+              </div>
+            </template>
+
+            <template if:false={hasUsersInPermissionSet}>
+              <div class="slds-text-align_center slds-var-p-vertical_medium">
+                <lightning-icon
+                  icon-name="utility:info"
+                  size="medium"
+                  class="slds-var-m-bottom_small"
+                ></lightning-icon>
+                <p class="slds-text-heading_small">No active users found</p>
+                <p class="slds-text-body_regular slds-text-color_weak">
+                  This permission set has no active users assigned to it.
+                </p>
+              </div>
+            </template>
+          </template>
+        </div>
+      </template>
+
+      <template if:false={hasSelectedPermissionSet}>
+        <div class="slds-text-align_center slds-var-p-vertical_large">
+          <lightning-icon
+            icon-name="utility:search"
+            size="large"
+            class="slds-var-m-bottom_small"
+          ></lightning-icon>
+          <p class="slds-text-heading_medium">Search for a Permission Set</p>
+          <p class="slds-text-body_regular slds-text-color_weak">
+            Enter a permission set name or label above to get started.
+          </p>
+        </div>
+      </template>
+    </div>
+  </lightning-card>
+</template>

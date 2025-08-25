@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>View usage of Mirrexa services and documents generated</description>
+    <flexiPage>Mirrexa_Usage_Page</flexiPage>
+    <label>Usage</label>
+    <motif>Custom18: Form</motif>
+</CustomTab>

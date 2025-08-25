@@ -1,0 +1,161 @@
+<template>
+  <lightning-card title="Users with Mirrexa Access" icon-name="standard:user">
+    <div slot="actions">
+      <lightning-button
+        label="Refresh"
+        onclick={handleRefresh}
+        variant="neutral"
+        icon-name="utility:refresh"
+      >
+      </lightning-button>
+    </div>
+
+    <div class="slds-var-p-horizontal_medium">
+      <template if:true={isLoading}>
+        <lightning-spinner
+          alternative-text="Loading users..."
+        ></lightning-spinner>
+      </template>
+
+      <template if:false={isLoading}>
+        <div class="slds-var-m-bottom_medium">
+          <p class="slds-text-body_regular">
+            <strong>{userCount}</strong> user(s) currently have Mirrexa App
+            Access
+          </p>
+        </div>
+
+        <template if:true={hasUsers}>
+          <!-- Bulk Actions -->
+          <template if:true={hasSelectedUsers}>
+            <div class="slds-var-m-bottom_medium">
+              <lightning-button
+                label={selectedUserIds.length}
+                title="Selected Users"
+                variant="neutral"
+                class="slds-var-m-right_small"
+              >
+              </lightning-button>
+              <lightning-button
+                label="Remove Access from Selected"
+                onclick={handleBulkRemove}
+                variant="destructive"
+                icon-name="utility:delete"
+              >
+              </lightning-button>
+            </div>
+          </template>
+
+          <!-- Users Cards - Mobile Friendly -->
+          <div class="slds-grid slds-wrap slds-gutters_small">
+            <template for:each={users} for:item="user">
+              <div
+                key={user.userId}
+                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3"
+              >
+                <lightning-card class="user-card slds-var-m-bottom_small">
+                  <div class="slds-card__header slds-grid">
+                    <div
+                      class="slds-media slds-media_center slds-has-flexi-truncate"
+                    >
+                      <div class="slds-media__figure">
+                        <lightning-input
+                          type="checkbox"
+                          data-user-id={user.userId}
+                          onchange={handleCardSelection}
+                          class="user-checkbox"
+                        ></lightning-input>
+                      </div>
+                      <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                          <span class="slds-text-heading_small slds-truncate"
+                            >{user.name}</span
+                          >
+                        </h2>
+                        <div class="slds-text-body_small slds-text-color_weak">
+                          {user.username}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="slds-no-flex">
+                      <lightning-button-menu
+                        alternative-text="User Actions"
+                        icon-size="x-small"
+                        menu-alignment="right"
+                        data-user-id={user.userId}
+                        data-user-name={user.name}
+                        onselect={handleCardAction}
+                      >
+                        <lightning-menu-item
+                          value="remove_access"
+                          label="Remove Access"
+                          icon-name="utility:delete"
+                        ></lightning-menu-item>
+                      </lightning-button-menu>
+                    </div>
+                  </div>
+                  <div class="slds-card__body slds-card__body_inner">
+                    <div class="slds-grid slds-wrap slds-gutters_xx-small">
+                      <div class="slds-col slds-size_1-of-1">
+                        <div class="user-info-text">
+                          <lightning-icon
+                            icon-name="utility:email"
+                            size="xx-small"
+                            class="slds-var-m-right_xx-small"
+                          ></lightning-icon>
+                          <a href={user.emailLink}>{user.email}</a>
+                        </div>
+                      </div>
+                      <div
+                        class="slds-col slds-size_1-of-2 slds-var-m-top_xx-small"
+                      >
+                        <div class="user-info-text">
+                          <lightning-icon
+                            icon-name="utility:user"
+                            size="xx-small"
+                            class="slds-var-m-right_xx-small"
+                          ></lightning-icon>
+                          <lightning-badge
+                            label={user.activeLabel}
+                            variant={user.activeVariant}
+                          ></lightning-badge>
+                        </div>
+                      </div>
+                      <div
+                        class="slds-col slds-size_1-of-2 slds-var-m-top_xx-small"
+                      >
+                        <div class="user-info-text">
+                          <lightning-icon
+                            icon-name="utility:date_input"
+                            size="xx-small"
+                            class="slds-var-m-right_xx-small"
+                          ></lightning-icon>
+                          {user.assignedDateFormatted}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </lightning-card>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <template if:false={hasUsers}>
+          <div class="slds-text-align_center slds-var-p-vertical_large">
+            <lightning-icon
+              icon-name="utility:info"
+              size="large"
+              class="slds-var-m-bottom_small"
+            ></lightning-icon>
+            <p class="slds-text-heading_medium">No users found</p>
+            <p class="slds-text-body_regular slds-text-color_weak">
+              No users currently have the Mirrexa_App_Access_2GP permission set
+              assigned.
+            </p>
+          </div>
+        </template>
+      </template>
+    </div>
+  </lightning-card>
+</template>

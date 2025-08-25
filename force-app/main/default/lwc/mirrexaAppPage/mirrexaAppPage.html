@@ -1,0 +1,311 @@
+<template>
+  <div class="slds-card">
+    <div class="slds-card__header slds-grid">
+      <header class="slds-media slds-media_center slds-has-flexi-truncate">
+        <div class="slds-media__figure">
+          <span class="slds-icon_container slds-icon-standard-document">
+            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+              <use
+                xlink:href="/apexpages/slds/latest/assets/icons/standard-sprite/svg/symbols.svg#document"
+              ></use>
+            </svg>
+          </span>
+        </div>
+        <div class="slds-media__body">
+          <h2 class="slds-card__header-title">
+            <span>Mirrexa Document Generator</span>
+          </h2>
+        </div>
+      </header>
+    </div>
+    <div class="slds-card__body slds-card__body_inner">
+      <!-- Connection Status Component -->
+      <c-mirrexa-connection-status
+        auto-register="true"
+        check-on-connect="true"
+        show-loading-spinner="false"
+        onconnectionstatuschange={handleConnectionStatusChange}
+        onconnectionerror={handleConnectionError}
+        onuserregistered={handleUserRegistered}
+      ></c-mirrexa-connection-status>
+
+      <!-- Loading Spinner -->
+      <template if:true={isLoading}>
+        <div class="slds-align_absolute-center slds-p-vertical_large">
+          <lightning-spinner
+            alternative-text="Loading templates..."
+            size="medium"
+          ></lightning-spinner>
+        </div>
+      </template>
+
+      <template if:false={isLoading}>
+        <!-- Show content based on connection status -->
+        <template if:true={isNotAllowed}>
+          <div class="slds-text-align_center slds-var-p-around_medium">
+            <lightning-icon
+              icon-name="utility:error"
+              size="medium"
+              variant="error"
+              class="slds-var-m-bottom_small"
+            ></lightning-icon>
+            <p class="slds-text-body_regular slds-var-m-bottom_medium">
+              You don't have permission to access Mirrexa. Please contact your
+              administrator.
+            </p>
+          </div>
+        </template>
+
+        <template if:false={isNotAllowed}>
+          <template if:false={isConnected}>
+            <div class="slds-text-align_center slds-var-p-around_medium">
+              <lightning-icon
+                icon-name="utility:warning"
+                size="medium"
+                variant="warning"
+                class="slds-var-m-bottom_small"
+              ></lightning-icon>
+              <p class="slds-text-body_regular slds-var-m-bottom_medium">
+                Please connect to Mirrexa to generate documents.
+              </p>
+              <p class="slds-text-body_small slds-text-color_weak">
+                Use the "Connect to Mirrexa" button above to authenticate.
+              </p>
+            </div>
+          </template>
+
+          <template if:true={isConnected}>
+            <!-- Subscription Information Section -->
+            <div class="slds-var-m-top_medium">
+              <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title slds-theme_shade">
+                  <span
+                    class="slds-truncate slds-p-horizontal_small"
+                    title="Your Subscriptions"
+                  >
+                    <lightning-icon
+                      icon-name="utility:subscription"
+                      size="x-small"
+                      class="slds-var-m-right_x-small"
+                    ></lightning-icon>
+                    Your Subscriptions
+                  </span>
+                </h3>
+                <div class="slds-section__content">
+                  <!-- Loading State -->
+                  <template if:true={subscriptionsLoading}>
+                    <div
+                      class="slds-text-align_center slds-var-p-around_medium"
+                    >
+                      <lightning-spinner
+                        alternative-text="Loading subscriptions..."
+                        size="small"
+                      ></lightning-spinner>
+                      <p class="slds-var-m-top_small">
+                        Loading subscription information...
+                      </p>
+                    </div>
+                  </template>
+
+                  <!-- Error State -->
+                  <template if:true={subscriptionsError}>
+                    <div
+                      class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
+                      role="alert"
+                    >
+                      <span class="slds-assistive-text">Error</span>
+                      <lightning-icon
+                        icon-name="utility:error"
+                        size="x-small"
+                        variant="inverse"
+                        class="slds-var-m-right_x-small"
+                      ></lightning-icon>
+                      <h2>
+                        Failed to load subscriptions: {subscriptionsError}
+                      </h2>
+                    </div>
+                  </template>
+
+                  <!-- Subscriptions List -->
+                  <template if:false={subscriptionsLoading}>
+                    <template if:false={subscriptionsError}>
+                      <template if:true={subscriptions}>
+                        <template if:true={subscriptions.length}>
+                          <div class="slds-grid slds-wrap slds-gutters">
+                            <template
+                              for:each={subscriptions}
+                              for:item="subscription"
+                            >
+                              <div
+                                key={subscription.id}
+                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3"
+                              >
+                                <article
+                                  class="slds-card slds-var-m-bottom_small"
+                                >
+                                  <div class="slds-card__header slds-grid">
+                                    <header
+                                      class="slds-media slds-media_center slds-has-flexi-truncate"
+                                    >
+                                      <div class="slds-media__figure">
+                                        <template
+                                          if:true={subscription.isActive}
+                                        >
+                                          <lightning-icon
+                                            icon-name="utility:success"
+                                            size="small"
+                                            variant="success"
+                                          ></lightning-icon>
+                                        </template>
+                                        <template
+                                          if:false={subscription.isActive}
+                                        >
+                                          <lightning-icon
+                                            icon-name="utility:warning"
+                                            size="small"
+                                            variant="warning"
+                                          ></lightning-icon>
+                                        </template>
+                                      </div>
+                                      <div class="slds-media__body">
+                                        <h2 class="slds-card__header-title">
+                                          <span class="slds-text-heading_small"
+                                            >{subscription.productTypeLabel}</span
+                                          >
+                                        </h2>
+                                        <p
+                                          class="slds-text-body_small slds-text-color_weak"
+                                        >
+                                          {subscription.productSubTypeLabel}
+                                          Plan
+                                        </p>
+                                      </div>
+                                    </header>
+                                  </div>
+                                  <div
+                                    class="slds-card__body slds-card__body_inner"
+                                  >
+                                    <!-- Status Badge -->
+                                    <div class="slds-var-m-bottom_small">
+                                      <template if:true={subscription.isActive}>
+                                        <span
+                                          class="slds-badge slds-theme_success"
+                                          >Active</span
+                                        >
+                                      </template>
+                                      <template
+                                        if:false={subscription.isActive}
+                                      >
+                                        <span
+                                          class="slds-badge slds-theme_warning"
+                                          >Inactive</span
+                                        >
+                                      </template>
+                                    </div>
+
+                                    <!-- Usage Information -->
+                                    <template
+                                      if:true={subscription.product_type_period_limit}
+                                    >
+                                      <div class="slds-var-m-bottom_small">
+                                        <div
+                                          class="slds-grid slds-grid_align-spread slds-var-m-bottom_x-small"
+                                        >
+                                          <span class="slds-text-body_small"
+                                            >Usage</span
+                                          >
+                                          <span class="slds-text-body_small">
+                                            {subscription.product_type_usage_count}
+                                            /
+                                            {subscription.product_type_period_limit}
+                                          </span>
+                                        </div>
+                                        <lightning-progress-bar
+                                          value={subscription.usagePercentage}
+                                          size="small"
+                                        ></lightning-progress-bar>
+                                      </div>
+                                    </template>
+
+                                    <!-- Subscription Details -->
+                                    <dl class="slds-list_horizontal slds-wrap">
+                                      <template
+                                        if:true={subscription.product_type_amount}
+                                      >
+                                        <dt
+                                          class="slds-item_label slds-text-color_weak slds-truncate"
+                                          title="Seats/Licenses"
+                                        >
+                                          Seats:
+                                        </dt>
+                                        <dd
+                                          class="slds-item_detail slds-truncate"
+                                          title={subscription.product_type_amount}
+                                        >
+                                          {subscription.product_type_amount}
+                                        </dd>
+                                      </template>
+                                      <dt
+                                        class="slds-item_label slds-text-color_weak slds-truncate"
+                                        title="Start Date"
+                                      >
+                                        Start:
+                                      </dt>
+                                      <dd
+                                        class="slds-item_detail slds-truncate"
+                                        title={subscription.formattedStartDate}
+                                      >
+                                        {subscription.formattedStartDate}
+                                      </dd>
+                                      <dt
+                                        class="slds-item_label slds-text-color_weak slds-truncate"
+                                        title="End Date"
+                                      >
+                                        End:
+                                      </dt>
+                                      <dd
+                                        class="slds-item_detail slds-truncate"
+                                        title={subscription.formattedEndDate}
+                                      >
+                                        {subscription.formattedEndDate}
+                                      </dd>
+                                    </dl>
+                                  </div>
+                                </article>
+                              </div>
+                            </template>
+                          </div>
+                        </template>
+                        <template if:false={subscriptions.length}>
+                          <div
+                            class="slds-text-align_center slds-var-p-around_medium"
+                          >
+                            <lightning-icon
+                              icon-name="utility:info"
+                              size="medium"
+                              variant="info"
+                              class="slds-var-m-bottom_small"
+                            ></lightning-icon>
+                            <p class="slds-text-body_regular">
+                              No active subscriptions found.
+                            </p>
+                            <p
+                              class="slds-text-body_small slds-text-color_weak"
+                            >
+                              Contact your administrator to set up
+                              subscriptions.
+                            </p>
+                          </div>
+                        </template>
+                      </template>
+                    </template>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </template>
+        </template>
+      </template>
+    </div>
+  </div>
+</template>

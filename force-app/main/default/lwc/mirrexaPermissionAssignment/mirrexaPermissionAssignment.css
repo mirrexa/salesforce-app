@@ -1,0 +1,50 @@
+.user-card {
+  transition: box-shadow 0.2s ease-in-out;
+  border: 1px solid #d8dde6;
+}
+
+.user-card:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-checkbox {
+  margin-right: 0.5rem;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .user-card {
+    margin-bottom: 0.75rem;
+  }
+  
+  .slds-card__header {
+    padding: 0.75rem;
+  }
+  
+  .slds-card__body {
+    padding: 0.75rem;
+  }
+}
+
+/* Custom class for text with icons to avoid SLDS override */
+.user-info-text {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* Make email links more accessible */
+.user-info-text a {
+  color: #0176d3;
+  text-decoration: none;
+}
+
+.user-info-text a:hover {
+  text-decoration: underline;
+}
+
+/* Improve checkbox alignment */
+.user-checkbox lightning-input {
+  --slds-c-checkbox-sizing-border: 1px solid #d8dde6;
+}

@@ -1,0 +1,20 @@
+{
+  "packageDirectories": [
+    {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "path": "force-app",
+      "default": true,
+      "package": "Mirrexa",
+      "versionDescription": ""
+    }
+  ],
+  "name": "mirrexa",
+  "namespace": "mirrexa",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "64.0",
+  "packageAliases": {
+    "Mirrexa": "0HoQ300000000mPKAQ",
+    "Mirrexa@0.1.0-13": "04tQ3000000zmxNIAQ"
+  }
+}

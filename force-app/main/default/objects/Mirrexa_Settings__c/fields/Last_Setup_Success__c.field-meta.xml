@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Last_Setup_Success__c</fullName>
+    <description>Stores the last successful setup operation message</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Contains details of the last successful Mirrexa setup operation</inlineHelpText>
+    <label>Last Setup Success</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

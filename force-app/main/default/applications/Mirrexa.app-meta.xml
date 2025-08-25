@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#0176D3</headerColor>
+        <logo>logo</logo>
+        <logoVersion>1</logoVersion>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <description>Mirrexa application for generating professional client documents directly within Salesforce.</description>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>Mirrexa</label>
+    <navType>Standard</navType>
+    <tabs>Usage</tabs>
+    <tabs>Templates</tabs>
+    <tabs>Admin</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>Mirrexa_UtilityBar</utilityBar>
+</CustomApplication>

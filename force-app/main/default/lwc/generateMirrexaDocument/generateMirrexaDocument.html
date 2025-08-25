@@ -1,0 +1,158 @@
+<template>
+  <lightning-card title="Mirrexa Document Generation">
+    <div class="slds-var-m-around_medium">
+      <!-- Connection Status Component -->
+      <c-mirrexa-connection-status
+        auto-register="true"
+        check-on-connect="true"
+        show-loading-spinner="false"
+        onconnectionstatuschange={handleConnectionStatusChange}
+        onconnectionerror={handleConnectionError}
+        onuserregistered={handleUserRegistered}
+      ></c-mirrexa-connection-status>
+
+      <!-- Loading Spinner State -->
+      <template if:true={isLoading}>
+        <lightning-spinner
+          alternative-text="Loading..."
+          size="medium"
+        ></lightning-spinner>
+      </template>
+
+      <!-- Main Content, shown after loading -->
+      <template if:false={isLoading}>
+        <!-- Show template selection and generate button if connected -->
+        <template if:true={isConnected}>
+          <div class="slds-var-m-bottom_medium">
+            <p class="slds-var-m-bottom_small">
+              Select a document template and generate a document from this
+              record.
+            </p>
+
+            <!-- Template Selection -->
+            <template if:true={templatesLoading}>
+              <div class="slds-var-m-bottom_medium">
+                <lightning-spinner
+                  alternative-text="Loading templates..."
+                  size="small"
+                ></lightning-spinner>
+                <p class="slds-text-body_small slds-var-m-left_small">
+                  Loading templates...
+                </p>
+              </div>
+            </template>
+
+            <template if:false={templatesLoading}>
+              <template if:true={templates}>
+                <template if:true={templates.length}>
+                  <div class="slds-var-m-bottom_medium">
+                    <div class="slds-var-m-bottom_medium">
+                      <lightning-input
+                        name="documentName"
+                        label="Document Name"
+                        value={documentName}
+                        placeholder="Enter a name for the document"
+                        onchange={handleDocumentNameChange}
+                        required
+                      ></lightning-input>
+                    </div>
+                    <div class="slds-var-m-bottom_medium">
+                      <lightning-combobox
+                        name="templateSelect"
+                        label="Document Template"
+                        value={selectedTemplateId}
+                        placeholder="Select a template"
+                        options={templates}
+                        onchange={handleTemplateChange}
+                        required
+                      ></lightning-combobox>
+                    </div>
+                  </div>
+                </template>
+
+                <template if:false={templates.length}>
+                  <div class="slds-var-m-bottom_medium">
+                    <p class="slds-text-color_error">
+                      No document templates available. Please create one using
+                      the links below, or contact your administrator.
+                    </p>
+                  </div>
+                </template>
+
+                <div class="slds-var-m-bottom_medium">
+                  <div class="slds-var-m-top_x-small">
+                    <a
+                      href="javascript:void(0)"
+                      onclick={handleNavigateToTemplates}
+                      class="slds-text-link slds-text-body_small"
+                    >
+                      Manage Templates in Salesforce
+                    </a>
+                  </div>
+                  <div class="slds-var-m-top_x-small slds-var-m-bottom_medium">
+                    <a
+                      href="https://mirrexa.ai/user/templates"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="slds-text-link slds-text-body_small"
+                    >
+                      Manage Templates and Tags in Mirrexa
+                    </a>
+                  </div>
+                </div>
+              </template>
+            </template>
+          </div>
+
+          <template if:false={templatesLoading}>
+            <template if:true={templates}>
+              <template if:true={templates.length}>
+                <div class="slds-var-m-bottom_medium">
+                  <lightning-input
+                    type="toggle"
+                    label="Store document in Mirrexa"
+                    name="storeInMirrexa"
+                    checked={storeInMirrexa}
+                    onchange={handleStoreInMirrexaChange}
+                    message-toggle-inactive="Document will be attached to this record, and WILL NOT be stored in Mirrexa"
+                    message-toggle-active="Document will be attached to this record, and WILL be stored in Mirrexa"
+                  ></lightning-input>
+                </div>
+
+                <div class="slds-var-m-bottom_medium">
+                  <lightning-button
+                    label="Generate Document"
+                    variant="brand"
+                    onclick={handleGenerateClick}
+                    disabled={isWorking}
+                  >
+                  </lightning-button>
+                </div>
+              </template>
+            </template>
+          </template>
+
+          <!-- Progress Section - Always visible when working -->
+          <template if:true={isWorking}>
+            <div
+              class="slds-var-m-top_medium slds-box slds-theme_shade slds-p-around_medium"
+            >
+              <!-- Fallback Simple Spinner -->
+              <div class="slds-text-align_center">
+                <div class="slds-var-m-bottom_small">
+                  <div class="slds-text-heading_small">
+                    Generating Document...
+                  </div>
+                </div>
+                <lightning-spinner
+                  alternative-text="Working..."
+                  size="medium"
+                ></lightning-spinner>
+              </div>
+            </div>
+          </template>
+        </template>
+      </template>
+    </div>
+  </lightning-card>
+</template>

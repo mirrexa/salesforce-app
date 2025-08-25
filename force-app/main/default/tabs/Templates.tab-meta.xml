@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>View and manage document templates</description>
+    <flexiPage>Mirrexa_Templates_Page</flexiPage>
+    <label>Templates</label>
+    <motif>Custom18: Form</motif>
+</CustomTab>

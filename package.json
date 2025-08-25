@@ -1,0 +1,67 @@
+{
+  "name": "@project/mirrexa-salesforce",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Salesforce App",
+  "scripts": {
+    "lint": "eslint **/{aura,lwc,classes,components,controllers,helpers,models,providers,renderer,scripts,styles,templates,utils,validators}/**/*.js",
+    "test": "npm run test:unit",
+    "test:unit": "sfdx-lwc-jest",
+    "test:unit:watch": "sfdx-lwc-jest --watch",
+    "test:unit:debug": "sfdx-lwc-jest --debug",
+    "test:unit:coverage": "sfdx-lwc-jest --coverage",
+    "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "postinstall": "husky init",
+    "precommit": "lint-staged",
+    "sf-login": "sf org login web",
+    "sf-dev": "sf lightning dev app --device-type desktop",
+    "sf-create-scratch": "sf org create scratch --definition-file config/project-scratch-def.json --alias MirrexaDev1 --set-default --duration-days 30",
+    "sf-destroy-scratch": "sf org delete scratch --target-org MirrexaDev1",
+    "sf-deploy": "sf project deploy start --ignore-conflicts --ignore-errors --verbose --ignore-warnings --target-org MirrexaDev1",
+    "sf-auth-scratch": "sf org login web --set-default --target-org MirrexaDev1",
+    "sf-open-scratch": "sf org open --target-org MirrexaDev1",
+    "sf-test": "sf apex run test --target-org MirrexaDev1 --code-coverage --detailed-coverage --synchronous",
+    "sf-pull": "sf project retrieve start --manifest manifest/package.xml --target-org MirrexaDev1",
+    "sf-logs": "sf apex list log --target-org MirrexaDev1",
+    "sf-logs-view": "sf apex get log --log-id 07LTA00000CwePr2AJ --target-org MirrexaDev1",
+    "sf-create-package": "sf package create --name=Mirrexa --package-type=Managed --target-dev-hub=my-hub-org --path=force-app",
+    "sf-delete-package": "sf package delete --package Mirrexa --target-dev-hub my-hub-org --no-prompt",
+    "sf-package-list": "sf package list --target-dev-hub my-hub-org",
+    "sf-create-package-version": "sf package version create --package Mirrexa --installation-key-bypass --wait 10 -v my-hub-org --code-coverage",
+    "sf-delete-package-version": "sf package version delete --package \"Mirrexa@0.1.0-13\" --target-dev-hub my-hub-org --no-prompt",
+    "sf-list-package-versions": "sf package version list --target-dev-hub my-hub-org",
+    "sf-install-package": "sf package:install --package \"Mirrexa@0.1.0-13\" --wait 10 --target-org MirrexaDev1",
+    "sf-uninstall-package": "sf package:uninstall --package \"Mirrexa@0.1.0-13\" --wait 10 --target-org MirrexaDev1",
+    "sf-promote-package": "sf package version promote --package \"Mirrexa@0.1.0-13\" --target-dev-hub my-hub-org",
+    "sf-check": "sfdx scanner:run --target \"force-app\" --format table",
+    "sf-security-check": "sf code-analyzer run --rule-selector AppExchange --rule-selector Recommended:Security --output-file CodeAnalyzerReport.html",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@lwc/eslint-plugin-lwc": "^3.2.0",
+    "@lwc/engine-dom": "^8.20.4",
+    "@lwc/jest-preset": "^19.1.2",
+    "@prettier/plugin-xml": "^3.4.2",
+    "@salesforce/eslint-config-lwc": "^4.0.0",
+    "@salesforce/eslint-plugin-aura": "^3.0.0",
+    "@salesforce/eslint-plugin-lightning": "^2.0.0",
+    "@salesforce/sfdx-lwc-jest": "^7.1.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jest": "^29.0.1",
+    "husky": "^9.1.7",
+    "jest": "^29",
+    "lint-staged": "^16.1.5",
+    "prettier": "^3.6.2",
+    "prettier-plugin-apex": "^2.2.6"
+  },
+  "lint-staged": {
+    "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
+      "prettier --write"
+    ],
+    "**/{aura,lwc,classes,components,controllers,helpers,models,providers,renderer,scripts,styles,templates,utils,validators}/**/*.js": [
+      "eslint"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>team@mirrexa.ai</contactEmail>
+    <label>Mirrexa Metadata API Connector</label>
+    <oauthConfig>
+        <callbackUrl>https://login.salesforce.com/services/oauth2/callback</callbackUrl>
+        <certificate>MIIDwTCCAqmgAwIBAgIUGVXmsYd3M+3HSvJgaPQ+c/+MSKQwDQYJKoZIhvcNAQELBQAwgYgxCzAJBgNVBAYTAkdCMQ8wDQYDVQQIDAZMb25kb24xDzANBgNVBAcMBkxvbmRvbjEQMA4GA1UECgwHTWlycmV4YTETMBEGA1UECwwKVGVjaG5vbG9neTEQMA4GA1UEAwwHTWlycmV4YTEeMBwGCSqGSIb3DQEJARYPdGVhbUBtaXJyZXhhLmFpMB4XDTI1MDgwNzE2MzQ1OFoXDTI3MDgwNzE2MzQ1OFowgYgxCzAJBgNVBAYTAkdCMQ8wDQYDVQQIDAZMb25kb24xDzANBgNVBAcMBkxvbmRvbjEQMA4GA1UECgwHTWlycmV4YTETMBEGA1UECwwKVGVjaG5vbG9neTEQMA4GA1UEAwwHTWlycmV4YTEeMBwGCSqGSIb3DQEJARYPdGVhbUBtaXJyZXhhLmFpMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvglc5Sl48kinuTSmXeMRarFq/YuNsplCA+lEel9/RfBq0EWHeyWAMGcYzRiMBPxIZHPMnlZfYKFpUgiJKSti7ROR90Du66BZIpPg5AQPhVw47LmNvFX499y+8JsRTX6iqommViH7WSYPFynC9+SXiLMraNmEOUHP8WGrxoRyxcpwGlbgtbKAz3rX2l12+5+vgxUZNOU3vA8CnNIkpjPlgdVkyTqabKrOIyo0xbKbm22JwjWA1v63taBBJq9TB2eEBYilerL6KhAcv/ff5mRl2XVTb3SOxvCn4/Aa5aXphtATw91aUYpC5FFCrcA86gkNj9xfYYLdKbur9mje5BxXsQIDAQABoyEwHzAdBgNVHQ4EFgQUn/I1IcRcwDAjd+abyJvH81ZtISwwDQYJKoZIhvcNAQELBQADggEBAKaNCnyn95jJ99FA1ufa/E9tYY0/DNjSAaboR6Mrnmwlc28b+udMPW+F4Q9Vu/SnrbW6OkiMfj78rQ4BcSmUAmQUSNoYgEZhP6hg+EHBNQjIEuUw+EChC+Yl8veKcQl0VgwIt6so6tSXzmZCtQrvGy/e1B1lEol0jbIuYye+Xj+nN0Hu+lA3CZW8foYBCbapGCW9lX+QZo8c6r3XvsEJEHZ/LllmQUbpHZ9hIL2KYJxHELgW+U3TxKCrvnY0zWlKelF1h9Dt9BARtLETkyXaERkB2ngNd01MG/8gcQuSoa5IOoOTDiDKWq2hiIJLG4zeOFmW1q6ETAYlnbjBBhhth2U=</certificate>
+        <isAdminApproved>true</isAdminApproved>
+        <isClientCredentialEnabled>true</isClientCredentialEnabled>
+        <isCodeCredentialEnabled>false</isCodeCredentialEnabled>
+        <isCodeCredentialPostOnly>false</isCodeCredentialPostOnly>
+        <isConsumerSecretOptional>false</isConsumerSecretOptional>
+        <isIntrospectAllTokens>false</isIntrospectAllTokens>
+        <isNamedUserJwtEnabled>true</isNamedUserJwtEnabled>
+        <isPkceRequired>false</isPkceRequired>
+        <isRefreshTokenRotationEnabled>false</isRefreshTokenRotationEnabled>
+        <isSecretRequiredForRefreshToken>false</isSecretRequiredForRefreshToken>
+        <isSecretRequiredForTokenExchange>true</isSecretRequiredForTokenExchange>
+        <isTokenExchangeEnabled>true</isTokenExchangeEnabled>
+        <scopes>Basic</scopes>
+        <scopes>Api</scopes>
+        <scopes>Full</scopes>
+        <scopes>RefreshToken</scopes>
+        <scopes>Content</scopes>
+    </oauthConfig>
+    <oauthPolicy>
+        <ipRelaxation>BYPASS</ipRelaxation>
+        <isTokenExchangeFlowEnabled>false</isTokenExchangeFlowEnabled>
+        <refreshTokenPolicy>infinite</refreshTokenPolicy>
+    </oauthPolicy>
+    <permissionSetName>Mirrexa App Access</permissionSetName>
+    <profileName>System Administrator</profileName>
+    <profileName>Standard User</profileName>
+</ConnectedApp>

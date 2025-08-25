@@ -1,0 +1,169 @@
+<template>
+  <lightning-card title="Document Templates" icon-name="standard:document">
+    <div slot="actions">
+      <lightning-button
+        label="Refresh"
+        icon-name="utility:refresh"
+        onclick={handleRefresh}
+        disabled={isLoading}
+      ></lightning-button>
+    </div>
+
+    <div class="slds-p-horizontal_medium">
+      <!-- Connection Status Component -->
+      <c-mirrexa-connection-status
+        auto-register="true"
+        check-on-connect="true"
+        show-loading-spinner="false"
+        onconnectionstatuschange={handleConnectionStatusChange}
+        onconnectionerror={handleConnectionError}
+        onuserregistered={handleUserRegistered}
+      ></c-mirrexa-connection-status>
+
+      <!-- Loading Spinner -->
+      <template if:true={isLoading}>
+        <div class="slds-align_absolute-center slds-p-vertical_large">
+          <lightning-spinner
+            alternative-text="Loading templates..."
+            size="medium"
+          ></lightning-spinner>
+        </div>
+      </template>
+
+      <template if:false={isLoading}>
+        <!-- Show content only when connected -->
+        <template if:true={isConnected}>
+          <!-- Error Message -->
+          <template if:true={hasError}>
+            <div class="slds-p-vertical_medium">
+              <div
+                class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
+                role="alert"
+              >
+                <span class="slds-assistive-text">Error</span>
+                <h2>
+                  <lightning-icon
+                    icon-name="utility:error"
+                    alternative-text="Error"
+                    size="x-small"
+                    class="slds-m-right_x-small"
+                  ></lightning-icon>
+                  {error}
+                </h2>
+              </div>
+            </div>
+          </template>
+
+          <!-- Templates List -->
+          <template if:true={hasTemplates}>
+            <div class="slds-p-vertical_medium">
+              <lightning-datatable
+                key-field="id"
+                data={templates}
+                columns={columns}
+                hide-checkbox-column="true"
+                show-row-number-column="false"
+                onrowaction={handleRowAction}
+              ></lightning-datatable>
+
+              <!-- Pagination Controls -->
+              <template if:true={hasPagination}>
+                <div class="slds-p-top_medium">
+                  <div
+                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
+                  >
+                    <!-- Page Info -->
+                    <div class="slds-col">
+                      <span class="slds-text-body_small slds-text-color_weak"
+                        >{pageInfo}</span
+                      >
+                    </div>
+
+                    <!-- Pagination Buttons -->
+                    <div class="slds-col slds-no-flex">
+                      <div class="slds-button-group" role="group">
+                        <lightning-button
+                          label="First"
+                          onclick={handleFirstPage}
+                          disabled={isPreviousDisabled}
+                          variant="neutral"
+                          class="slds-m-right_xx-small"
+                        ></lightning-button>
+                        <lightning-button
+                          icon-name="utility:chevronleft"
+                          alternative-text="Previous"
+                          onclick={handlePreviousPage}
+                          disabled={isPreviousDisabled}
+                          variant="neutral"
+                        ></lightning-button>
+                        <span
+                          class="slds-p-horizontal_small slds-text-body_small"
+                        >
+                          Page {currentPageDisplay} of {totalPages}
+                        </span>
+                        <lightning-button
+                          icon-name="utility:chevronright"
+                          alternative-text="Next"
+                          onclick={handleNextPage}
+                          disabled={isNextDisabled}
+                          variant="neutral"
+                        ></lightning-button>
+                        <lightning-button
+                          label="Last"
+                          onclick={handleLastPage}
+                          disabled={isNextDisabled}
+                          variant="neutral"
+                          class="slds-m-left_xx-small"
+                        ></lightning-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- No Templates Message -->
+          <template if:false={hasTemplates}>
+            <template if:false={isLoading}>
+              <template if:false={hasError}>
+                <div class="slds-align_absolute-center slds-p-vertical_large">
+                  <div class="slds-text-align_center">
+                    <lightning-icon
+                      icon-name="standard:document"
+                      size="large"
+                      class="slds-m-bottom_small"
+                    ></lightning-icon>
+                    <h3 class="slds-text-heading_medium">
+                      No Templates Available
+                    </h3>
+                    <p class="slds-text-body_regular slds-m-top_small">
+                      There are no document templates available at this time.
+                    </p>
+                  </div>
+                </div>
+              </template>
+            </template>
+          </template>
+        </template>
+
+        <!-- Show connection message when not connected -->
+        <template if:false={isConnected}>
+          <div class="slds-text-align_center slds-var-p-around_medium">
+            <lightning-icon
+              icon-name="utility:warning"
+              variant="warning"
+              size="medium"
+            ></lightning-icon>
+            <h3 class="slds-text-heading_medium slds-var-m-top_small">
+              Connection Required
+            </h3>
+            <p class="slds-var-m-top_small">
+              Please connect to Mirrexa to view document templates.
+            </p>
+          </div>
+        </template>
+      </template>
+    </div>
+  </lightning-card>
+</template>

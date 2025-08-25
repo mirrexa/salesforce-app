@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Configure the Mirrexa app</description>
+    <flexiPage>Mirrexa_Admin_Page</flexiPage>
+    <label>Admin</label>
+    <motif>Custom18: Form</motif>
+</CustomTab>

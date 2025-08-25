@@ -1,0 +1,56 @@
+<template>
+  <template if:true={canCheck}>
+    <!-- Optional UI template - can be used if parent wants to show connection status -->
+    <div class="mirrexa-connection-status">
+      <div
+        class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
+      >
+        <div class="slds-col">
+          <div class="slds-text-body_small">
+            <template if:true={isConnected}>
+              <lightning-icon
+                icon-name="utility:success"
+                size="x-small"
+                variant="success"
+                class="slds-m-right_x-small"
+              ></lightning-icon>
+              {connectionStatusText}
+            </template>
+            <template if:true={isNotAllowed}>
+              <lightning-icon
+                icon-name="utility:error"
+                size="x-small"
+                variant="error"
+                class="slds-m-right_x-small"
+              ></lightning-icon>
+              {connectionStatusText}
+            </template>
+            <template if:false={isConnected}>
+              <template if:false={isNotAllowed}>
+                <lightning-icon
+                  icon-name="utility:warning"
+                  size="x-small"
+                  variant="warning"
+                  class="slds-m-right_x-small"
+                ></lightning-icon>
+                {connectionStatusText}
+              </template>
+            </template>
+          </div>
+        </div>
+        <div class="slds-col slds-no-flex">
+          <div class="slds-button-group">
+            <template if:true={showConnectButton}>
+              <lightning-button
+                label="Connect to Mirrexa"
+                onclick={handleConnect}
+                variant="brand"
+                size="small"
+              >
+              </lightning-button>
+            </template>
+          </div>
+        </div>
+      </div></div
+  ></template>
+</template>
