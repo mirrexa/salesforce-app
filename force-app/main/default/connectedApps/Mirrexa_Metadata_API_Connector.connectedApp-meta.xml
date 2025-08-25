@@ -28,7 +28,7 @@
         <isTokenExchangeFlowEnabled>false</isTokenExchangeFlowEnabled>
         <refreshTokenPolicy>infinite</refreshTokenPolicy>
     </oauthPolicy>
-    <permissionSetName>Mirrexa App Access</permissionSetName>
+    <permissionSetName>Mirrexa_App_Access_2GP</permissionSetName>
     <profileName>System Administrator</profileName>
     <profileName>Standard User</profileName>
 </ConnectedApp>
