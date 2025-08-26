@@ -76,24 +76,26 @@ export default class MirrexaAppPage extends LightningElement {
       const data = JSON.parse(response);
 
       if (data.success && Array.isArray(data.message)) {
-        this.subscriptions = data.message.map((sub) => ({
-          ...sub,
-          productTypeLabel: this.getProductTypeLabel(sub.product_type),
-          productSubTypeLabel: this.getProductSubTypeLabel(
-            sub.product_sub_type
-          ),
-          isActive: sub.is_active === 1,
-          usagePercentage:
-            sub.product_type_period_limit > 0
-              ? Math.round(
-                  (sub.product_type_usage_count /
-                    sub.product_type_period_limit) *
-                    100
-                )
-              : 0,
-          formattedStartDate: this.formatDate(sub.start_date),
-          formattedEndDate: this.formatDate(sub.end_date)
-        }));
+        this.subscriptions = data.message
+          .filter((sub) => sub.is_active === 1)
+          .map((sub) => ({
+            ...sub,
+            productTypeLabel: this.getProductTypeLabel(sub.product_type),
+            productSubTypeLabel: this.getProductSubTypeLabel(
+              sub.product_sub_type
+            ),
+            isActive: sub.is_active === 1,
+            usagePercentage:
+              sub.product_type_period_limit > 0
+                ? Math.round(
+                    (sub.product_type_usage_count /
+                      sub.product_type_period_limit) *
+                      100
+                  )
+                : 0,
+            formattedStartDate: this.formatDate(sub.start_date),
+            formattedEndDate: this.formatDate(sub.end_date)
+          }));
       } else {
         this.subscriptionsError =
           "Invalid response format from subscription API";

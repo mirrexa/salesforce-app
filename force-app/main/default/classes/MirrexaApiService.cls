@@ -142,13 +142,13 @@ public with sharing class MirrexaApiService {
   ) {
     try {
       // Input validation
-      if (page != null && (page < 1 || page > 1000)) {
+      if (page != null && (page < 0 || page > 1000)) {
         throw new AuraHandledException(
           'Page number must be between 1 and 1000'
         );
       }
 
-      if (pageSize != null && (pageSize < 1 || pageSize > 200)) {
+      if (pageSize != null && (pageSize < 0 || pageSize > 200)) {
         throw new AuraHandledException('Page size must be between 1 and 200');
       }
 

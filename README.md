@@ -1,70 +1,30 @@
-# Mirrexa - Salesforce AppExchange App
+# Mirrexa - Salesforce App
 
 ## Overview
 
 Mirrexa is a Salesforce Lightning Web Component (LWC) application that enables wealth managers to generate professional client documents directly within Salesforce. The app integrates with the Mirrexa platform to provide seamless document generation capabilities.
 
-## Features
-
-- **OAuth Authentication**: Secure authentication with Mirrexa platform
-- **Document Generation**: Generate professional client documents from Salesforce data
-- **Lightning Web Components**: Modern, responsive UI built with Salesforce Lightning Design System
-- **Permission-Based Access**: Controlled access through Salesforce permission sets
-
 ## Installation
 
 ### Prerequisites
 
-- Salesforce org with Lightning Experience enabled
-- System Administrator access
-- API access enabled in your Salesforce org
+- Salesforce org with Lightning Experience enabled.
+- System Administrator access.
+- API access enabled in your Salesforce org.
 
 ### Installation Steps
 
-1. **Install the Package**
-   - Navigate to the AppExchange listing for Mirrexa
-   - Click "Get It Now" and follow the installation wizard
-   - Choose to install for "All Users" or specific profiles as needed
+1. **Install the Package from AppExchange**
+   - Install the app from the AppExchange.
 
-2. **Assign Permission Sets**
-   - Go to Setup → Users → Permission Sets
-   - Find "Mirrexa_App_Access_2GP" permission set
-   - Assign it to users who need access to the app
+2. **(Alternative) Install the Package from Source**
+   - Clone this repository.
+   - Install the package using the Salesforce CLI.
+   - You may need to alter `package.json` to match your Salesforce org.
+   - Run `npm run sf-deploy` to deploy the package to your Salesforce org.
 
-3. **Configure OAuth Connection**
-   - Navigate to the Mirrexa component in your Salesforce org
-   - Click "Authenticate with Mirrexa" to establish OAuth connection
-   - Complete the authentication flow in the popup window
-
-4. **Verify Installation**
-   - Test document generation functionality
-   - Ensure all users can access the component as expected
-
-## Usage
-
-### For End Users
-
-1. **Authentication**
-   - Open the Mirrexa component
-   - If not authenticated, click "Authenticate with Mirrexa"
-   - Complete the OAuth flow in the popup window
-
-2. **Generate Documents**
-   - [TODO: Add specific usage instructions for document generation]
-   - Select the appropriate document type
-   - Configure document parameters
-   - Generate and download the document
-
-### For Administrators
-
-1. **User Management**
-   - Assign the "Mirrexa_App_Access_2GP" permission set to appropriate users
-   - Monitor OAuth connections and authentication status
-
-2. **Configuration**
-   - [TODO: Add configuration options and settings]
-   - Review Remote Site Settings if needed
-   - Monitor app usage and performance
+3. **Follow the Installation Guide**
+   - Follow the [Installation Guide](install-guide.md) for detailed instructions on how to install and configure the app.
 
 ## Technical Details
 

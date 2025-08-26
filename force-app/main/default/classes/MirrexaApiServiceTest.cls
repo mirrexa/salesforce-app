@@ -8,12 +8,21 @@ private class MirrexaApiServiceTest {
     MirrexaHttpMock.nextBody = '{"success":true,"message":{"documentTemplate":{"id":"tmpl-general","type":"GENERAL"}}}';
     try {
       String tmpl = MirrexaApiService.getDocumentTemplate('tmpl-general');
-      System.assert(tmpl.contains('GENERAL'), 'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+      System.assert(
+        tmpl.contains('GENERAL'),
+        'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | ')
+      );
     } catch (Exception e) {
-      System.assert(false, 'Direct GET threw: ' + e.getMessage() + ' Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+      System.assert(
+        false,
+        'Direct GET threw: ' +
+          e.getMessage() +
+          ' Calls: ' +
+          String.join(MirrexaHttpMock.callLog, ' | ')
+      );
     }
-    }
-  
+  }
+
   @IsTest
   static void test_getUserData_success() {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
@@ -24,7 +33,13 @@ private class MirrexaApiServiceTest {
     String body = MirrexaApiService.getUserData();
     Test.stopTest();
     System.assertNotEquals(null, body, 'Expected a non-null body');
-    System.assert(body.contains('user-1'), 'Unexpected body: ' + body + ' | Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    System.assert(
+      body.contains('user-1'),
+      'Unexpected body: ' +
+        body +
+        ' | Calls: ' +
+        String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -62,9 +77,9 @@ private class MirrexaApiServiceTest {
   @IsTest
   static void test_getDocumentTemplates_invalid_params_throw() {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
-    // page < 1
+    // page < 0
     try {
-      String ignored = MirrexaApiService.getDocumentTemplates(0, 10, false);
+      String ignored = MirrexaApiService.getDocumentTemplates(-1, 10, false);
       System.assert(false, 'Expected exception for invalid page');
     } catch (AuraHandledException e) {
       System.assert(true, 'Caught expected');
@@ -76,9 +91,9 @@ private class MirrexaApiServiceTest {
     } catch (AuraHandledException e) {
       System.assert(true, 'Caught expected');
     }
-    // pageSize < 1
+    // pageSize < 0
     try {
-      String ignored = MirrexaApiService.getDocumentTemplates(1, 0, false);
+      String ignored = MirrexaApiService.getDocumentTemplates(1, -1, false);
       System.assert(false, 'Expected exception for invalid pageSize');
     } catch (AuraHandledException e) {
       System.assert(true, 'Caught expected');
@@ -141,7 +156,9 @@ private class MirrexaApiServiceTest {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
     MirrexaHttpMock.nextStatusCode = 500;
     try {
-      String ignored = MirrexaApiService.toggleDocumentTemplateShare('tmpl-general');
+      String ignored = MirrexaApiService.toggleDocumentTemplateShare(
+        'tmpl-general'
+      );
       System.assert(false, 'Expected exception for toggle failure');
     } catch (AuraHandledException e) {
       System.assert(true, 'Caught expected');
@@ -153,7 +170,13 @@ private class MirrexaApiServiceTest {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
     MirrexaHttpMock.nextStatusCode = 500;
     try {
-      String ignored = MirrexaApiService.createDocumentTemplate('Name','Desc','GENERAL','YmFzZTY0',true);
+      String ignored = MirrexaApiService.createDocumentTemplate(
+        'Name',
+        'Desc',
+        'GENERAL',
+        'YmFzZTY0',
+        true
+      );
       System.assert(false, 'Expected exception for create failure');
     } catch (AuraHandledException e) {
       System.assert(true, 'Caught expected');
@@ -165,7 +188,11 @@ private class MirrexaApiServiceTest {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
     MirrexaHttpMock.nextStatusCode = 500;
     try {
-      String ignored = MirrexaApiService.registerUser('https://example.my.salesforce.com','user@example.com','005000000000001');
+      String ignored = MirrexaApiService.registerUser(
+        'https://example.my.salesforce.com',
+        'user@example.com',
+        '005000000000001'
+      );
       System.assert(false, 'Expected exception for register failure');
     } catch (AuraHandledException e) {
       System.assert(true, 'Caught expected');
@@ -177,8 +204,17 @@ private class MirrexaApiServiceTest {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
     MirrexaHttpMock.callLog.clear();
     Id recordId = UserInfo.getUserId();
-    String result = MirrexaApiService.generateAndAttachDocument(recordId, 'doesnotexist', 'DocName', true);
-    System.assertEquals('failed', result, 'Expected failed when template fetch fails');
+    String result = MirrexaApiService.generateAndAttachDocument(
+      recordId,
+      'doesnotexist',
+      'DocName',
+      true
+    );
+    System.assertEquals(
+      'failed',
+      result,
+      'Expected failed when template fetch fails'
+    );
   }
 
   @IsTest
@@ -190,7 +226,13 @@ private class MirrexaApiServiceTest {
     Test.startTest();
     String res = MirrexaApiService.getDocumentTemplates(1, 10, false);
     Test.stopTest();
-    System.assert(res.contains('items'), 'Unexpected body: ' + res + ' | Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    System.assert(
+      res.contains('items'),
+      'Unexpected body: ' +
+        res +
+        ' | Calls: ' +
+        String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -200,7 +242,13 @@ private class MirrexaApiServiceTest {
     MirrexaHttpMock.nextStatusCode = 200;
     MirrexaHttpMock.nextBody = '{"success":true,"message":"deleted"}';
     String res = MirrexaApiService.deleteDocumentTemplate('tmpl-general');
-    System.assert(res.contains('deleted'), 'Unexpected: ' + res + ' Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    System.assert(
+      res.contains('deleted'),
+      'Unexpected: ' +
+        res +
+        ' Calls: ' +
+        String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -210,7 +258,13 @@ private class MirrexaApiServiceTest {
     MirrexaHttpMock.nextStatusCode = 200;
     MirrexaHttpMock.nextBody = '{"success":true,"message":"toggled"}';
     String res = MirrexaApiService.toggleDocumentTemplateShare('tmpl-general');
-    System.assert(res.contains('toggled'), 'Unexpected: ' + res + ' Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    System.assert(
+      res.contains('toggled'),
+      'Unexpected: ' +
+        res +
+        ' Calls: ' +
+        String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -219,8 +273,20 @@ private class MirrexaApiServiceTest {
     MirrexaHttpMock.callLog.clear();
     MirrexaHttpMock.nextStatusCode = 200;
     MirrexaHttpMock.nextBody = '{"success":true,"message":{"id":"new-tmpl"}}';
-    String res = MirrexaApiService.createDocumentTemplate('Name','Desc','GENERAL','YmFzZTY0',true);
-    System.assert(res.contains('new-tmpl'), 'Unexpected: ' + res + ' Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    String res = MirrexaApiService.createDocumentTemplate(
+      'Name',
+      'Desc',
+      'GENERAL',
+      'YmFzZTY0',
+      true
+    );
+    System.assert(
+      res.contains('new-tmpl'),
+      'Unexpected: ' +
+        res +
+        ' Calls: ' +
+        String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -229,8 +295,18 @@ private class MirrexaApiServiceTest {
     MirrexaHttpMock.callLog.clear();
     MirrexaHttpMock.nextStatusCode = 200;
     MirrexaHttpMock.nextBody = '{"success":true,"message":"registered"}';
-    String res = MirrexaApiService.registerUser('https://example.my.salesforce.com','user@example.com','005000000000001');
-    System.assert(res.contains('registered'), 'Unexpected: ' + res + ' Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    String res = MirrexaApiService.registerUser(
+      'https://example.my.salesforce.com',
+      'user@example.com',
+      '005000000000001'
+    );
+    System.assert(
+      res.contains('registered'),
+      'Unexpected: ' +
+        res +
+        ' Calls: ' +
+        String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -238,10 +314,17 @@ private class MirrexaApiServiceTest {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
     MirrexaHttpMock.callLog.clear();
     MirrexaHttpMock.nextStatusCode = 200;
-    Map<String,Object> payload = new Map<String,Object>{ 'name' => 'Doc' };
+    Map<String, Object> payload = new Map<String, Object>{ 'name' => 'Doc' };
     HttpResponse r = MirrexaApiService.generateDocument(payload);
-    System.assertEquals(200, r.getStatusCode(), 'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
-    System.assert(r.getBody().contains('crm_able_to_attach'), 'Body: ' + r.getBody());
+    System.assertEquals(
+      200,
+      r.getStatusCode(),
+      'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | ')
+    );
+    System.assert(
+      r.getBody().contains('crm_able_to_attach'),
+      'Body: ' + r.getBody()
+    );
   }
 
   @IsTest
@@ -249,10 +332,17 @@ private class MirrexaApiServiceTest {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
     MirrexaHttpMock.callLog.clear();
     MirrexaHttpMock.nextStatusCode = 200;
-    Map<String,Object> payload = new Map<String,Object>{ 'name' => 'Letter' };
+    Map<String, Object> payload = new Map<String, Object>{ 'name' => 'Letter' };
     HttpResponse r = MirrexaApiService.generateSuitabilityLetter(payload);
-    System.assertEquals(200, r.getStatusCode(), 'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
-    System.assert(r.getBody().contains('crm_able_to_attach'), 'Body: ' + r.getBody());
+    System.assertEquals(
+      200,
+      r.getStatusCode(),
+      'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | ')
+    );
+    System.assert(
+      r.getBody().contains('crm_able_to_attach'),
+      'Body: ' + r.getBody()
+    );
   }
 
   @IsTest
@@ -262,8 +352,17 @@ private class MirrexaApiServiceTest {
     MirrexaHttpMock.callLog.clear();
     MirrexaHttpMock.nextAttachAllowed = true;
     Id recordId = UserInfo.getUserId();
-    String result = MirrexaApiService.generateAndAttachDocument(recordId, 'tmpl-general', 'DocName', true);
-    System.assertEquals('generated_and_attached', result, 'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    String result = MirrexaApiService.generateAndAttachDocument(
+      recordId,
+      'tmpl-general',
+      'DocName',
+      true
+    );
+    System.assertEquals(
+      'generated_and_attached',
+      result,
+      'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -272,8 +371,17 @@ private class MirrexaApiServiceTest {
     MirrexaHttpMock.callLog.clear();
     MirrexaHttpMock.nextAttachAllowed = false;
     Id recordId = UserInfo.getUserId();
-    String result = MirrexaApiService.generateAndAttachDocument(recordId, 'tmpl-general', 'DocName', true);
-    System.assertEquals('generated', result, 'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    String result = MirrexaApiService.generateAndAttachDocument(
+      recordId,
+      'tmpl-general',
+      'DocName',
+      true
+    );
+    System.assertEquals(
+      'generated',
+      result,
+      'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -282,8 +390,17 @@ private class MirrexaApiServiceTest {
     MirrexaHttpMock.callLog.clear();
     MirrexaHttpMock.nextAttachAllowed = true;
     Id recordId = UserInfo.getUserId();
-    String result = MirrexaApiService.generateAndAttachDocument(recordId, 'tmpl-suit', 'DocName', false);
-    System.assertEquals('generated_and_attached', result, 'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    String result = MirrexaApiService.generateAndAttachDocument(
+      recordId,
+      'tmpl-suit',
+      'DocName',
+      false
+    );
+    System.assertEquals(
+      'generated_and_attached',
+      result,
+      'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -291,8 +408,17 @@ private class MirrexaApiServiceTest {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
     MirrexaHttpMock.callLog.clear();
     Id recordId = UserInfo.getUserId();
-    String result = MirrexaApiService.generateAndAttachDocument(recordId, 'tmpl-unknown', 'DocName', true);
-    System.assertEquals('failed', result, 'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    String result = MirrexaApiService.generateAndAttachDocument(
+      recordId,
+      'tmpl-unknown',
+      'DocName',
+      true
+    );
+    System.assertEquals(
+      'failed',
+      result,
+      'Calls: ' + String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -300,7 +426,13 @@ private class MirrexaApiServiceTest {
     Test.setMock(HttpCalloutMock.class, new MirrexaHttpMock());
     MirrexaHttpMock.callLog.clear();
     String body = MirrexaApiService.getSubscriptions();
-    System.assert(body.contains('products'), 'Unexpected: ' + body + ' Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    System.assert(
+      body.contains('products'),
+      'Unexpected: ' +
+        body +
+        ' Calls: ' +
+        String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 
   @IsTest
@@ -317,7 +449,10 @@ private class MirrexaApiServiceTest {
       System.assert(String.isNotBlank(url), 'Expected non-blank URL');
     } catch (Exception e) {
       // Acceptable in test context if External Credential not fully configured
-      System.assert(String.isNotBlank(e.getMessage()), 'Expected an error message');
+      System.assert(
+        String.isNotBlank(e.getMessage()),
+        'Expected an error message'
+      );
     }
   }
 
@@ -330,6 +465,12 @@ private class MirrexaApiServiceTest {
     Test.startTest();
     String res = MirrexaApiService.autoRegisterUser();
     Test.stopTest();
-    System.assert(res.contains('registered'), 'Unexpected: ' + res + ' Calls: ' + String.join(MirrexaHttpMock.callLog, ' | '));
+    System.assert(
+      res.contains('registered'),
+      'Unexpected: ' +
+        res +
+        ' Calls: ' +
+        String.join(MirrexaHttpMock.callLog, ' | ')
+    );
   }
 }
