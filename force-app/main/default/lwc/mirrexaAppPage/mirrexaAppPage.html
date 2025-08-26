@@ -1,5 +1,15 @@
 <template>
-  <div class="slds-card">
+  <!-- Connection Status Component -->
+  <c-mirrexa-connection-status
+    auto-register="true"
+    check-on-connect="true"
+    show-loading-spinner="false"
+    onconnectionstatuschange={handleConnectionStatusChange}
+    onconnectionerror={handleConnectionError}
+    onuserregistered={handleUserRegistered}
+  ></c-mirrexa-connection-status>
+
+  <div class="slds-card slds-var-m-top_medium">
     <div class="slds-card__header slds-grid">
       <header class="slds-media slds-media_center slds-has-flexi-truncate">
         <div class="slds-media__figure">
@@ -19,16 +29,6 @@
       </header>
     </div>
     <div class="slds-card__body slds-card__body_inner">
-      <!-- Connection Status Component -->
-      <c-mirrexa-connection-status
-        auto-register="true"
-        check-on-connect="true"
-        show-loading-spinner="false"
-        onconnectionstatuschange={handleConnectionStatusChange}
-        onconnectionerror={handleConnectionError}
-        onuserregistered={handleUserRegistered}
-      ></c-mirrexa-connection-status>
-
       <!-- Loading Spinner -->
       <template if:true={isLoading}>
         <div class="slds-align_absolute-center slds-p-vertical_large">

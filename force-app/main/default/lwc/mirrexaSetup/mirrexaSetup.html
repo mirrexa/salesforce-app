@@ -1,16 +1,20 @@
 <template>
-  <lightning-card title="Mirrexa Connection Setup" icon-name="custom:custom14">
-    <div class="slds-var-m-around_medium">
-      <!-- Connection Status Component -->
-      <c-mirrexa-connection-status
-        auto-register="true"
-        check-on-connect="true"
-        show-loading-spinner="false"
-        onconnectionstatuschange={handleConnectionStatusChange}
-        onconnectionerror={handleConnectionError}
-        onuserregistered={handleUserRegistered}
-      ></c-mirrexa-connection-status>
+  <!-- Connection Status Component -->
+  <c-mirrexa-connection-status
+    auto-register="true"
+    check-on-connect="true"
+    show-loading-spinner="false"
+    onconnectionstatuschange={handleConnectionStatusChange}
+    onconnectionerror={handleConnectionError}
+    onuserregistered={handleUserRegistered}
+  ></c-mirrexa-connection-status>
 
+  <lightning-card
+    title="Mirrexa Connection Setup"
+    icon-name="custom:custom14"
+    class="slds-var-m-top_medium"
+  >
+    <div class="slds-var-m-around_medium">
       <template if:false={isNamedCredentialConnected}>
         <template if:false={isUserCredentialConnected}>
           <p class="slds-var-m-bottom_medium">

@@ -26,11 +26,6 @@ export default class MirrexaAppPage extends LightningElement {
 
     if (statusChanged) {
       if (isConnected) {
-        this.showToast(
-          "Success",
-          "Successfully connected to Mirrexa",
-          "success"
-        );
         // Load subscriptions when connected
         this.loadSubscriptions();
       } else {

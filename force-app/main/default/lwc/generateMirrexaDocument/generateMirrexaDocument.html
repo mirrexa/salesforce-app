@@ -1,28 +1,36 @@
 <template>
-  <lightning-card title="Mirrexa Document Generation">
-    <div class="slds-var-m-around_medium">
-      <!-- Connection Status Component -->
-      <c-mirrexa-connection-status
-        auto-register="true"
-        check-on-connect="true"
-        show-loading-spinner="false"
-        onconnectionstatuschange={handleConnectionStatusChange}
-        onconnectionerror={handleConnectionError}
-        onuserregistered={handleUserRegistered}
-      ></c-mirrexa-connection-status>
+  <!-- Connection Status Component -->
+  <c-mirrexa-connection-status
+    auto-register="true"
+    check-on-connect="true"
+    show-loading-spinner="false"
+    onconnectionstatuschange={handleConnectionStatusChange}
+    onconnectionerror={handleConnectionError}
+    onuserregistered={handleUserRegistered}
+  ></c-mirrexa-connection-status>
 
-      <!-- Loading Spinner State -->
-      <template if:true={isLoading}>
+  <template if:true={isLoading}>
+    <lightning-card title="Mirrexa Document Generation">
+      <div class="slds-var-m-around_medium">
+        <!-- Loading Spinner State -->
         <lightning-spinner
           alternative-text="Loading..."
           size="medium"
         ></lightning-spinner>
-      </template>
+      </div>
+    </lightning-card>
+  </template>
 
-      <!-- Main Content, shown after loading -->
-      <template if:false={isLoading}>
-        <!-- Show template selection and generate button if connected -->
-        <template if:true={isConnected}>
+  <!-- Main Content, shown after loading -->
+  <template if:false={isLoading}>
+    <!-- Show template selection and generate button if connected -->
+    <template if:true={isConnected}>
+      <lightning-card
+        title="Mirrexa Document Generation"
+        class="slds-var-m-top_medium"
+      >
+        <div class="slds-var-m-around_medium">
+          <!-- Loading Spinner State -->
           <div class="slds-var-m-bottom_medium">
             <p class="slds-var-m-bottom_small">
               Select a document template and generate a document from this
@@ -151,8 +159,8 @@
               </div>
             </div>
           </template>
-        </template>
-      </template>
-    </div>
-  </lightning-card>
+        </div>
+      </lightning-card>
+    </template>
+  </template>
 </template>
