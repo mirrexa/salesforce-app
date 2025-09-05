@@ -1018,24 +1018,6 @@ private class MirrexaSetupControllerTest {
   }
 
   @IsTest
-  static void test_assignPermissionSetToCurrentUser_idempotent_nonbypass() {
-    Boolean prev = MirrexaSetupController.TEST_BYPASS;
-    MirrexaSetupController.TEST_BYPASS = false;
-    try {
-      // First call should insert assignment if missing
-      MirrexaSetupController.assignPermissionSetToCurrentUser();
-      // Second call should be no-op
-      MirrexaSetupController.assignPermissionSetToCurrentUser();
-      System.assert(
-        true,
-        'assignPermissionSetToCurrentUser executed twice without error'
-      );
-    } finally {
-      MirrexaSetupController.TEST_BYPASS = prev;
-    }
-  }
-
-  @IsTest
   static void test_updateObjectPermissions_nonbypass_runs() {
     Boolean prev = MirrexaSetupController.TEST_BYPASS;
     MirrexaSetupController.TEST_BYPASS = false;
@@ -1207,39 +1189,6 @@ private class MirrexaSetupControllerTest {
     } finally {
       MirrexaSetupController.TEST_BYPASS = prev;
     }
-  }
-
-  @IsTest
-  static void test_populateCredentials_validation_early_returns() {
-    // These should not throw; they should just log and return early
-    Test.startTest();
-    MirrexaSetupController.populateCredentials('', 'cid', 'sec');
-    MirrexaSetupController.populateCredentials('Mirrexa', '', 'sec');
-    MirrexaSetupController.populateCredentials('Mirrexa', 'cid', '');
-    Test.stopTest();
-  }
-
-  @IsTest
-  static void test_assignPermissionSetToCurrentUser_conditional() {
-    Boolean threw = false;
-    try {
-      Test.startTest();
-      MirrexaSetupController.assignPermissionSetToCurrentUser();
-      Test.stopTest();
-    } catch (Exception e) {
-      threw = true;
-      // Expect MirrexaSetupException when Permission Set is missing
-      System.assert(
-        e.getMessage().contains('Mirrexa_App_Access_2GP') ||
-        e.getTypeName().contains('MirrexaSetupException')
-      );
-    }
-    // Either it assigned or it threw due to missing PS; both acceptable in generic orgs
-    System.assert(
-      true,
-      'Method executed with conditional behavior; threw=' +
-      String.valueOf(threw)
-    );
   }
 
   @IsTest

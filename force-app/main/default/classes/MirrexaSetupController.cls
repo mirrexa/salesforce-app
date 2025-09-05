@@ -4,7 +4,7 @@
  * @author Mirrexa Team
  * @date 2025-07-16
  */
-public without sharing class MirrexaSetupController {
+public with sharing class MirrexaSetupController {
   // Constants for configuration
   private static final String AUTH_PROVIDER_NAME = 'Mirrexa';
   private static final String PERMISSION_SET_NAME = 'Mirrexa_App_Access_2GP';
@@ -1153,30 +1153,6 @@ public without sharing class MirrexaSetupController {
     }
 
     return result;
-  }
-
-  /**
-   * @description Assigns the permission set to the current user
-   */
-  @AuraEnabled
-  public static void assignPermissionSetToCurrentUser() {
-    String permSetId = getPermissionSetId();
-    String userId = UserInfo.getUserId();
-
-    // Check if assignment already exists
-    List<PermissionSetAssignment> existing = [
-      SELECT Id
-      FROM PermissionSetAssignment
-      WHERE PermissionSetId = :permSetId AND AssigneeId = :userId
-      WITH SYSTEM_MODE
-    ];
-
-    if (existing.isEmpty()) {
-      insert as system new PermissionSetAssignment(
-        PermissionSetId = permSetId,
-        AssigneeId = userId
-      );
-    }
   }
 
   /**

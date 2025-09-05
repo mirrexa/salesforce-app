@@ -2,11 +2,12 @@
   "packageDirectories": [
     {
       "versionName": "ver 0.1",
-      "versionNumber": "0.1.0.NEXT",
+      "versionNumber": "0.1.1.NEXT",
       "path": "force-app",
       "default": true,
       "package": "Mirrexa",
-      "versionDescription": ""
+      "versionDescription": "",
+      "ancestorVersion": "HIGHEST"
     }
   ],
   "name": "mirrexa",
@@ -15,6 +16,7 @@
   "sourceApiVersion": "64.0",
   "packageAliases": {
     "Mirrexa": "0HoQ300000000mPKAQ",
-    "Mirrexa@0.1.0-13": "04tQ3000000zmxNIAQ"
+    "Mirrexa@0.1.0-13": "04tQ3000000zmxNIAQ",
+    "Mirrexa@0.1.1-1": "04tQ30000011GF3IAM"
   }
 }
