@@ -2,6 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>SetupComplete__c</fullName>
     <defaultValue>false</defaultValue>
+    <deprecated>false</deprecated>
     <description>Indicates whether the Mirrexa setup has been completed</description>
     <inlineHelpText>Indicates whether the Mirrexa setup has been completed</inlineHelpText>
     <label>Setup Complete</label>

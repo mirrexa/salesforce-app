@@ -6,6 +6,80 @@
  * @since API Version 64.0
  */
 public with sharing class MirrexaApiService {
+  // Namespace for 2GP packaging. Used to fully-qualify metadata names when required by ConnectApi.
+  private static final String PACKAGE_NAMESPACE = 'mirrexa';
+
+  /**
+   * Qualify a metadata API name with the package namespace, unless already qualified.
+   */
+  private static String namespaced(String apiName) {
+    if (String.isBlank(apiName)) return apiName;
+    if (apiName.contains('__')) return apiName;
+    return String.isBlank(PACKAGE_NAMESPACE) ? apiName : PACKAGE_NAMESPACE + '__' + apiName;
+  }
+
+  /**
+   * Resolve the Named Credential developer name to use for callout endpoints.
+   * Tries namespaced first, then plain. Returns the developer name string to
+   * be used in 'callout:<developerName>' endpoints.
+   */
+  private static String resolveNamedCredentialDevName(String baseDevName) {
+    try {
+      // Will throw if namespaced NC doesn't exist
+      ConnectApi.NamedCredential nc = ConnectApi.NamedCredentials.getNamedCredential(namespaced(baseDevName));
+      if (nc != null) return nc.developerName; // already namespaced value
+    } catch (Exception ignore) {
+      // fall through to plain
+    }
+    // Plain (non-namespaced) fallback
+    return baseDevName;
+  }
+
+  /**
+   * Try to get a Credential by external credential name and principal, attempting namespaced first then plain.
+   */
+  private static ConnectApi.Credential getCredentialWithFallback(
+    String externalCredentialBase,
+    String principalName,
+    ConnectApi.CredentialPrincipalType principalType
+  ) {
+    try {
+      return ConnectApi.NamedCredentials.getCredential(
+        namespaced(externalCredentialBase),
+        principalName,
+        principalType
+      );
+    } catch (Exception e1) {
+      return ConnectApi.NamedCredentials.getCredential(
+        externalCredentialBase,
+        principalName,
+        principalType
+      );
+    }
+  }
+
+  /**
+   * Try to get an OAuth authentication URL, attempting namespaced external credential first then plain.
+   */
+  private static ConnectApi.OAuthCredentialAuthUrl getOAuthAuthUrlWithFallback(
+    String externalCredentialBase,
+    String principalName,
+    ConnectApi.CredentialPrincipalType principalType
+  ) {
+    ConnectApi.OAuthCredentialAuthUrlInput input = new ConnectApi.OAuthCredentialAuthUrlInput();
+    input.externalCredential = namespaced(externalCredentialBase);
+    input.principalType = principalType;
+    input.principalName = principalName;
+    try {
+      return ConnectApi.NamedCredentials.getOAuthCredentialAuthUrl(input);
+    } catch (Exception e1) {
+      ConnectApi.OAuthCredentialAuthUrlInput inputPlain = new ConnectApi.OAuthCredentialAuthUrlInput();
+      inputPlain.externalCredential = externalCredentialBase;
+      inputPlain.principalType = principalType;
+      inputPlain.principalName = principalName;
+      return ConnectApi.NamedCredentials.getOAuthCredentialAuthUrl(inputPlain);
+    }
+  }
   /**
    * @description Checks if the current user has a valid OAuth connection to the Mirrexa platform.
    * @return String indicating connection status: 'Connected', 'Not Connected', or error message
@@ -19,11 +93,11 @@ public with sharing class MirrexaApiService {
   @SuppressWarnings('PMD.AvoidDebugStatements')
   public static String isUserConnected() {
     try {
-      String externalCredential = 'MirrexaOAuth';
+      String externalCredentialBase = 'MirrexaOAuth';
       String principalName = 'Standard User Access';
       ConnectApi.CredentialPrincipalType principalType = ConnectApi.CredentialPrincipalType.PerUserPrincipal;
-      ConnectApi.Credential actualCredential = ConnectApi.NamedCredentials.getCredential(
-        externalCredential,
+      ConnectApi.Credential actualCredential = getCredentialWithFallback(
+        externalCredentialBase,
         principalName,
         principalType
       );
@@ -54,15 +128,14 @@ public with sharing class MirrexaApiService {
    */
   @AuraEnabled
   public static String getAuthURL() {
-    String externalCredential = 'MirrexaOAuth';
-    ConnectApi.OAuthCredentialAuthUrlInput input = new ConnectApi.OAuthCredentialAuthUrlInput();
-    input.externalCredential = externalCredential;
-    input.principalType = ConnectApi.CredentialPrincipalType.PerUserPrincipal;
-    input.principalName = 'Standard User Access';
-    ConnectApi.OAuthCredentialAuthUrl output = ConnectApi.NamedCredentials.getOAuthCredentialAuthUrl(
-      input
+    String externalCredentialBase = 'MirrexaOAuth';
+    String principalName = 'Standard User Access';
+    ConnectApi.CredentialPrincipalType principalType = ConnectApi.CredentialPrincipalType.PerUserPrincipal;
+    ConnectApi.OAuthCredentialAuthUrl output = getOAuthAuthUrlWithFallback(
+      externalCredentialBase,
+      principalName,
+      principalType
     );
-
     return output.authenticationUrl;
   }
 
@@ -79,7 +152,8 @@ public with sharing class MirrexaApiService {
   public static String getUserData() {
     try {
       HttpRequest req = new HttpRequest();
-      req.setEndpoint('callout:Mirrexa_API/api/user');
+      String ncDevName = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName + '/api/user');
       req.setMethod('GET');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
       req.setTimeout(30000); // 30 second timeout
@@ -153,7 +227,8 @@ public with sharing class MirrexaApiService {
       }
 
       HttpRequest req = new HttpRequest();
-      String endpoint = 'callout:Mirrexa_API/api/document-templates';
+      String ncDevName = resolveNamedCredentialDevName('Mirrexa_API');
+      String endpoint = 'callout:' + ncDevName + '/api/document-templates';
 
       // Add pagination parameters if provided
       if (page != null || pageSize != null) {
@@ -239,9 +314,8 @@ public with sharing class MirrexaApiService {
       }
 
       HttpRequest req = new HttpRequest();
-      req.setEndpoint(
-        'callout:Mirrexa_API/api/document-templates/' + sanitizedTemplateId
-      );
+      String ncDevName2 = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName2 + '/api/document-templates/' + sanitizedTemplateId);
       req.setMethod('GET');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
@@ -296,9 +370,8 @@ public with sharing class MirrexaApiService {
   public static String deleteDocumentTemplate(String templateId) {
     try {
       HttpRequest req = new HttpRequest();
-      req.setEndpoint(
-        'callout:Mirrexa_API/api/document-templates/' + templateId
-      );
+      String ncDevName3 = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName3 + '/api/document-templates/' + templateId);
       req.setMethod('DELETE');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
@@ -339,11 +412,8 @@ public with sharing class MirrexaApiService {
   public static String toggleDocumentTemplateShare(String templateId) {
     try {
       HttpRequest req = new HttpRequest();
-      req.setEndpoint(
-        'callout:Mirrexa_API/api/document-templates/' +
-          templateId +
-          '/toggle-share'
-      );
+      String ncDevName4 = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName4 + '/api/document-templates/' + templateId + '/toggle-share');
       req.setMethod('POST');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
@@ -405,7 +475,8 @@ public with sharing class MirrexaApiService {
       };
 
       HttpRequest req = new HttpRequest();
-      req.setEndpoint('callout:Mirrexa_API/api/document-templates');
+      String ncDevName5 = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName5 + '/api/document-templates');
       req.setMethod('POST');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
       req.setBody(JSON.serialize(payload));
@@ -462,7 +533,8 @@ public with sharing class MirrexaApiService {
       };
 
       HttpRequest req = new HttpRequest();
-      req.setEndpoint('callout:Mirrexa_API/api/salesforce/register-user');
+      String ncDevName6 = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName6 + '/api/salesforce/register-user');
       req.setMethod('POST');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
       req.setBody(JSON.serialize(payload));
@@ -511,7 +583,8 @@ public with sharing class MirrexaApiService {
 
       // Make the API call
       HttpRequest req = new HttpRequest();
-      req.setEndpoint('callout:Mirrexa_API/api/documents');
+      String ncDevName7 = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName7 + '/api/documents');
       req.setMethod('POST');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
       req.setTimeout(60000);
@@ -552,7 +625,8 @@ public with sharing class MirrexaApiService {
 
       // Make the API call
       HttpRequest req = new HttpRequest();
-      req.setEndpoint('callout:Mirrexa_API/api/suitability-letters');
+      String ncDevName8 = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName8 + '/api/suitability-letters');
       req.setMethod('POST');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
       req.setTimeout(60000);
@@ -779,7 +853,8 @@ public with sharing class MirrexaApiService {
   public static String getSubscriptions() {
     try {
       HttpRequest req = new HttpRequest();
-      req.setEndpoint('callout:Mirrexa_API/api/subscriptions');
+      String ncDevName9 = resolveNamedCredentialDevName('Mirrexa_API');
+      req.setEndpoint('callout:' + ncDevName9 + '/api/subscriptions');
       req.setMethod('GET');
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
 

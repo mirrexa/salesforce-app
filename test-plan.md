@@ -53,7 +53,6 @@ This document outlines the comprehensive testing strategy for the Mirrexa Salesf
 #### Apex Class Tests
 **MirrexaSetupController Tests**
 - [ ] `configureConnection()` - Verify complete setup process
-- [ ] `createAuthProvider()` - Test auth provider creation
 - [ ] `createExternalCredential()` - Test external credential creation
 - [ ] `createNamedCredential()` - Test named credential creation
 - [ ] `isUserConnected()` - Test authentication status check

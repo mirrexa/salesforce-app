@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Last_Operation_Id__c</fullName>
+    <deprecated>false</deprecated>
     <description>Unique identifier for the last setup operation for tracking and debugging</description>
     <externalId>false</externalId>
     <inlineHelpText>Unique ID that can be used to correlate debug logs with setup operations</inlineHelpText>

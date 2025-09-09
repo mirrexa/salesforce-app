@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Last_Setup_Success_Time__c</fullName>
+    <deprecated>false</deprecated>
     <description>Timestamp of the last successful setup operation</description>
     <inlineHelpText>Date and time when the last successful setup operation completed</inlineHelpText>
     <label>Last Setup Success Time</label>

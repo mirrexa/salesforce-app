@@ -6,6 +6,8 @@
  */
 public with sharing class MirrexaSetupController {
   // Constants for configuration
+  // Namespace for 2GP packaging. Used to fully-qualify metadata names when required by ConnectApi.
+  private static final String PACKAGE_NAMESPACE = 'mirrexa';
   private static final String AUTH_PROVIDER_NAME = 'Mirrexa';
   private static final String PERMISSION_SET_NAME = 'Mirrexa_App_Access_2GP';
   private static final String CONNECTED_APP_NAME = 'Mirrexa Metadata API Connector';
@@ -75,6 +77,43 @@ public with sharing class MirrexaSetupController {
   private static Boolean TEST_SIMULATE_PRINCIPAL_NOT_FOUND = false;
   @TestVisible
   private static Boolean TEST_FORCE_EXISTING_ACCESS_TRUE = false;
+
+  /**
+   * Helper: qualify a metadata API name with the package namespace, unless it already appears qualified.
+   */
+  private static String namespaced(String apiName) {
+    if (String.isBlank(apiName)) return apiName;
+    // If already looks namespaced, return as-is
+    if (apiName.contains('__')) return apiName;
+    // If our package namespace is set, qualify; otherwise return unqualified name
+    return String.isBlank(PACKAGE_NAMESPACE)
+      ? apiName
+      : PACKAGE_NAMESPACE + '__' + apiName;
+  }
+
+  /**
+   * Helper: safely get External Credential by developer name, trying namespaced then plain.
+   */
+  private static ConnectApi.ExternalCredential getExternalCredentialByName(String baseName) {
+    try {
+      return ConnectApi.NamedCredentials.getExternalCredential(namespaced(baseName));
+    } catch (Exception e1) {
+      // Fallback to plain name for non-namespaced orgs
+      return ConnectApi.NamedCredentials.getExternalCredential(baseName);
+    }
+  }
+
+  /**
+   * Helper: safely get Named Credential by developer name, trying namespaced then plain.
+   */
+  private static ConnectApi.NamedCredential getNamedCredentialByName(String baseName) {
+    try {
+      return ConnectApi.NamedCredentials.getNamedCredential(namespaced(baseName));
+    } catch (Exception e1) {
+      // Fallback to plain name for non-namespaced orgs
+      return ConnectApi.NamedCredentials.getNamedCredential(baseName);
+    }
+  }
 
   /**
    * @description Asynchronously populates credentials for the external auth provider
@@ -201,7 +240,7 @@ public with sharing class MirrexaSetupController {
       // Create the credentials (skipped when test flag is set)
       if (doApiCall) {
         ConnectApi.NamedCredentials.createExternalAuthIdentityProviderCredentials(
-          fullName,
+          namespaced(fullName),
           credentialsInput
         );
       }
@@ -211,30 +250,12 @@ public with sharing class MirrexaSetupController {
         'POPULATE_CREDENTIALS',
         'Credentials populated successfully for: ' + fullName
       );
-    } catch (ConnectApi.ConnectApiException e) {
+    } catch (Exception e) {
       String message = e.getMessage();
       if (message.contains('Use the PUT method to overwrite them')) {
         logCredentialsOverwriteSuccess(operationId, fullName);
         return;
       }
-      String error =
-        'ConnectAPI error during credential population: ' + message;
-      logSetupError(
-        operationId,
-        'CONNECT_API_ERROR',
-        error + ' | Stack: ' + e.getStackTraceString(),
-        2
-      );
-    } catch (DmlException e) {
-      String error =
-        'DML error during credential population: ' + e.getMessage();
-      logSetupError(
-        operationId,
-        'DML_ERROR',
-        error + ' | Fields: ' + e.getDmlFields(0),
-        2
-      );
-    } catch (Exception e) {
       String error =
         'Unexpected error during credential population: ' + e.getMessage();
       logSetupError(
@@ -347,33 +368,9 @@ public with sharing class MirrexaSetupController {
         return result;
       }
 
-      // Step 1: Create external auth identity provider
-      String fullName = AUTH_PROVIDER_NAME;
-      try {
-        createAuthProvider(fullName);
-        completedSteps.add('Create Auth Provider');
-      } catch (Exception e) {
-        String error = 'Failed to create auth provider: ' + e.getMessage();
-        stepErrors.put('step1_authProvider', error);
-        logSetupError(
-          operationId,
-          'AUTH_PROVIDER_ERROR',
-          error + ' | Stack: ' + e.getStackTraceString(),
-          1
-        );
-        // Continue with other steps even if this fails
-      }
-
       // Step 2: Populate credentials (async)
-      try {
-        populateCredentials(fullName, clientId, clientSecret);
-        completedSteps.add('Initiate Credential Population');
-      } catch (Exception e) {
-        String error =
-          'Failed to initiate credential population: ' + e.getMessage();
-        stepErrors.put('step2_credentials', error);
-        logSetupError(operationId, 'CREDENTIALS_ERROR', error, 2);
-      }
+      populateCredentials(AUTH_PROVIDER_NAME, clientId, clientSecret);
+      completedSteps.add('Initiate Credential Population');
 
       // Step 3: Create external credential
       try {
@@ -484,64 +481,7 @@ public with sharing class MirrexaSetupController {
     return result;
   }
 
-  /**
-   * @description Creates or retrieves the external auth identity provider
-   * @param fullName The name of the auth provider
-   * @return ConnectApi.ExternalAuthIdentityProvider The created or existing auth provider
-   */
-  @TestVisible
-  @SuppressWarnings('PMD.AvoidDebugStatements')
-  private static ConnectApi.ExternalAuthIdentityProvider createAuthProvider(
-    String fullName
-  ) {
-    if (Test.isRunningTest() && TEST_THROW_CREATE_AUTH_PROVIDER) {
-      throw new IllegalArgumentException(
-        'Simulated createAuthProvider failure'
-      );
-    }
-    if (isTestBypass()) {
-      // In tests, build the input to cover logic, but skip ConnectApi
-      ConnectApi.ExternalAuthIdentityProviderInput idPInput = new ConnectApi.ExternalAuthIdentityProviderInput();
-      idPInput.fullName = fullName;
-      idPInput.label = fullName;
-      idPInput.authenticationProtocol = ConnectApi.IdentityProviderAuthProtocol.OAuth;
-      idPInput.authenticationFlow = ConnectApi.IdentityProviderAuthFlow.AuthorizationCode;
-      idPInput.authorizeUrl = AUTHORIZE_URL;
-      idPInput.tokenUrl = TOKEN_URL;
-      idPInput.userInfoUrl = USER_INFO_URL;
-      return null;
-    }
-    // First, try to get existing auth provider
-    try {
-      ConnectApi.ExternalAuthIdentityProvider existingProvider = ConnectApi.NamedCredentials.getExternalAuthIdentityProvider(
-        fullName
-      );
-      if (existingProvider != null) {
-        return existingProvider;
-      }
-    } catch (Exception e) {
-      // Auth provider doesn't exist, continue to create new one
-      System.debug(
-        LoggingLevel.INFO,
-        'Auth provider does not exist, creating new one: ' + fullName
-      );
-    }
 
-    // Create new auth provider
-    ConnectApi.ExternalAuthIdentityProviderInput idPInput = new ConnectApi.ExternalAuthIdentityProviderInput();
-
-    idPInput.fullName = fullName;
-    idPInput.label = fullName;
-    idPInput.authenticationProtocol = ConnectApi.IdentityProviderAuthProtocol.OAuth;
-    idPInput.authenticationFlow = ConnectApi.IdentityProviderAuthFlow.AuthorizationCode;
-    idPInput.authorizeUrl = AUTHORIZE_URL;
-    idPInput.tokenUrl = TOKEN_URL;
-    idPInput.userInfoUrl = USER_INFO_URL;
-
-    return ConnectApi.NamedCredentials.createExternalAuthIdentityProvider(
-      idPInput
-    );
-  }
 
   /**
    * @description Creates or retrieves the external credential with principals
@@ -566,7 +506,8 @@ public with sharing class MirrexaSetupController {
       ConnectApi.ExternalCredentialParameterInput authProviderParam = new ConnectApi.ExternalCredentialParameterInput();
       authProviderParam.parameterName = AUTH_PROVIDER_NAME;
       authProviderParam.parameterType = ConnectApi.ExternalCredentialParameterType.ExternalAuthIdentityProvider;
-      authProviderParam.parameterValue = AUTH_PROVIDER_NAME;
+      // The parameterValue should reference the Auth Provider full name; in a 2GP package this must be namespaced
+      authProviderParam.parameterValue = namespaced(AUTH_PROVIDER_NAME);
       externalCredentialInput.parameters.add(authProviderParam);
       externalCredentialInput.principals.add(createStandardUserPrincipal());
       externalCredentialInput.principals.add(createMarkdownAccessPrincipal());
@@ -574,7 +515,7 @@ public with sharing class MirrexaSetupController {
     }
     // First, try to get existing external credential
     try {
-      ConnectApi.ExternalCredential existingCredential = ConnectApi.NamedCredentials.getExternalCredential(
+      ConnectApi.ExternalCredential existingCredential = getExternalCredentialByName(
         EXTERNAL_CREDENTIAL_NAME
       );
       if (existingCredential != null) {
@@ -589,32 +530,7 @@ public with sharing class MirrexaSetupController {
       );
     }
 
-    // Create new external credential
-    ConnectApi.ExternalCredentialInput externalCredentialInput = new ConnectApi.ExternalCredentialInput();
-
-    // Set basic properties
-    externalCredentialInput.developerName = EXTERNAL_CREDENTIAL_NAME;
-    externalCredentialInput.masterLabel = EXTERNAL_CREDENTIAL_NAME;
-    externalCredentialInput.authenticationProtocol = ConnectApi.CredentialAuthenticationProtocol.OAuth;
-
-    // Initialize collections
-    externalCredentialInput.principals = new List<ConnectApi.ExternalCredentialPrincipalInput>();
-    externalCredentialInput.parameters = new List<ConnectApi.ExternalCredentialParameterInput>();
-
-    // Add auth provider parameter
-    ConnectApi.ExternalCredentialParameterInput authProviderParam = new ConnectApi.ExternalCredentialParameterInput();
-    authProviderParam.parameterName = AUTH_PROVIDER_NAME;
-    authProviderParam.parameterType = ConnectApi.ExternalCredentialParameterType.ExternalAuthIdentityProvider;
-    authProviderParam.parameterValue = AUTH_PROVIDER_NAME;
-    externalCredentialInput.parameters.add(authProviderParam);
-
-    // Add principals
-    externalCredentialInput.principals.add(createStandardUserPrincipal());
-    externalCredentialInput.principals.add(createMarkdownAccessPrincipal());
-
-    return ConnectApi.NamedCredentials.createExternalCredential(
-      externalCredentialInput
-    );
+    return null;
   }
 
   /**
@@ -674,7 +590,8 @@ public with sharing class MirrexaSetupController {
       namedCredentialInput.calloutUrl = API_BASE_URL;
       namedCredentialInput.externalCredentials = new List<ConnectApi.ExternalCredentialInput>();
       ConnectApi.ExternalCredentialInput externalCredential = new ConnectApi.ExternalCredentialInput();
-      externalCredential.developerName = EXTERNAL_CREDENTIAL_NAME;
+      // Reference the namespaced External Credential developerName in 2GP contexts
+      externalCredential.developerName = namespaced(EXTERNAL_CREDENTIAL_NAME);
       namedCredentialInput.externalCredentials.add(externalCredential);
       ConnectApi.NamedCredentialCalloutOptionsInput calloutOptions = new ConnectApi.NamedCredentialCalloutOptionsInput();
       calloutOptions.allowMergeFieldsInBody = false;
@@ -685,7 +602,7 @@ public with sharing class MirrexaSetupController {
     }
     // First, try to get existing named credential
     try {
-      ConnectApi.NamedCredential existingCredential = ConnectApi.NamedCredentials.getNamedCredential(
+      ConnectApi.NamedCredential existingCredential = getNamedCredentialByName(
         NAMED_CREDENTIAL_NAME
       );
       if (existingCredential != null) {
@@ -700,31 +617,7 @@ public with sharing class MirrexaSetupController {
       );
     }
 
-    // Create new named credential
-    ConnectApi.NamedCredentialInput namedCredentialInput = new ConnectApi.NamedCredentialInput();
-
-    // Set basic properties
-    namedCredentialInput.developerName = NAMED_CREDENTIAL_NAME;
-    namedCredentialInput.masterLabel = 'Mirrexa API';
-    namedCredentialInput.type = ConnectApi.NamedCredentialType.SecuredEndpoint;
-    namedCredentialInput.calloutUrl = API_BASE_URL;
-
-    // Add external credential reference
-    namedCredentialInput.externalCredentials = new List<ConnectApi.ExternalCredentialInput>();
-    ConnectApi.ExternalCredentialInput externalCredential = new ConnectApi.ExternalCredentialInput();
-    externalCredential.developerName = EXTERNAL_CREDENTIAL_NAME;
-    namedCredentialInput.externalCredentials.add(externalCredential);
-
-    // Configure callout options
-    ConnectApi.NamedCredentialCalloutOptionsInput calloutOptions = new ConnectApi.NamedCredentialCalloutOptionsInput();
-    calloutOptions.allowMergeFieldsInBody = false;
-    calloutOptions.allowMergeFieldsInHeader = false;
-    calloutOptions.generateAuthorizationHeader = true;
-    namedCredentialInput.calloutOptions = calloutOptions;
-
-    return ConnectApi.NamedCredentials.createNamedCredential(
-      namedCredentialInput
-    );
+    return null;
   }
 
   /**
@@ -851,7 +744,7 @@ public with sharing class MirrexaSetupController {
     if (isTestBypass()) {
       return 'TEST_BYPASS_PRINCIPAL';
     }
-    List<ConnectApi.ExternalCredentialPrincipal> principals = ConnectApi.NamedCredentials.getExternalCredential(
+    List<ConnectApi.ExternalCredentialPrincipal> principals = getExternalCredentialByName(
         EXTERNAL_CREDENTIAL_NAME
       )
       .principals;
@@ -1196,7 +1089,7 @@ public with sharing class MirrexaSetupController {
 
       // Check if external credential exists
       try {
-        ConnectApi.ExternalCredential extCred = ConnectApi.NamedCredentials.getExternalCredential(
+        ConnectApi.ExternalCredential extCred = getExternalCredentialByName(
           EXTERNAL_CREDENTIAL_NAME
         );
         debugInfo.put('externalCredentialExists', true);
@@ -1255,7 +1148,7 @@ public with sharing class MirrexaSetupController {
       if (!permSets.isEmpty()) {
         try {
           // First, get the External Credential and check if it has the required principal
-          ConnectApi.ExternalCredential extCred = ConnectApi.NamedCredentials.getExternalCredential(
+          ConnectApi.ExternalCredential extCred = getExternalCredentialByName(
             EXTERNAL_CREDENTIAL_NAME
           );
 
@@ -1348,7 +1241,7 @@ public with sharing class MirrexaSetupController {
 
       // Check if Named Credential exists
       try {
-        ConnectApi.NamedCredential namedCred = ConnectApi.NamedCredentials.getNamedCredential(
+        ConnectApi.NamedCredential namedCred = getNamedCredentialByName(
           NAMED_CREDENTIAL_NAME
         );
         debugInfo.put('namedCredentialExists', true);

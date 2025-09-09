@@ -1,13 +1,18 @@
 {
   "packageDirectories": [
     {
-      "versionName": "ver 0.1",
-      "versionNumber": "0.1.1.NEXT",
+      "versionName": "ver 1.6",
+      "versionNumber": "1.0.0.NEXT",
       "path": "force-app",
       "default": true,
       "package": "Mirrexa",
       "versionDescription": "",
-      "ancestorVersion": "HIGHEST"
+      "ancestorVersion": "HIGHEST",
+      "dependencies": [
+        {
+          "subscriberPackageVersionId": "04tQH0000043ffT"
+        }
+      ]
     }
   ],
   "name": "mirrexa",
@@ -17,6 +22,12 @@
   "packageAliases": {
     "Mirrexa": "0HoQ300000000mPKAQ",
     "Mirrexa@0.1.0-13": "04tQ3000000zmxNIAQ",
-    "Mirrexa@0.1.1-1": "04tQ30000011GF3IAM"
+    "Mirrexa@0.1.1-1": "04tQ30000011GF3IAM",
+    "Mirrexa@0.1.2-1": "04tQ30000011UI1IAM",
+    "Mirrexa@0.1.3-1": "04tQ30000011UxxIAE",
+    "Mirrexa@0.1.3-2": "04tQ30000011VCTIA2",
+    "Mirrexa@0.1.4-1": "04tQ30000011ZUbIAM",
+    "Mirrexa@0.1.5-1": "04tQ30000011aaLIAQ",
+    "Mirrexa@1.0.0-1": "04tQ30000011bubIAA"
   }
 }
