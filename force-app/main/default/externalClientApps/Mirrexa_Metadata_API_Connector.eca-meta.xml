@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExternalClientApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>team@mirrexa.ai</contactEmail>
+    <description>Mirrexa Metadata API Connector for JWT Bearer authentication</description>
+    <distributionState>Packaged</distributionState>
+    <infoUrl>https://mirrexa.ai</infoUrl>
+    <isProtected>false</isProtected>
+    <label>Mirrexa Metadata API Connector</label>
+    <orgScopedExternalApp>00DQH00000HATAD:Mirrexa_Metadata_API_Connector</orgScopedExternalApp>
+</ExternalClientApplication>
